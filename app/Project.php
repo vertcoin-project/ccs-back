@@ -11,6 +11,6 @@ class Project extends Model
      */
     public function deposits()
     {
-        return $this->hasMany(Deposit::class);
+        return $this->hasMany(Deposit::class, 'payment_id', 'payment_id');
     }
 }
