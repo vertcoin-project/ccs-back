@@ -3,10 +3,10 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Monero\Wallet;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 /**
- * App\Project
+ * App\ProjectResource
  *
  * @property int $id
  * @property string $payment_id
@@ -17,6 +17,8 @@ use Monero\Wallet;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Deposit[] $deposits
  * @property-read mixed $amount_received
  * @property-read string $uri
+ * @property-read int $percentage_funded
+ * @property-read int $contributions
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Project wherePaymentId($value)
@@ -41,5 +43,17 @@ class Project extends Model
 
     public function getUriAttribute() {
         return 'monero:'.env('WALLET_ADDRESS').'tx_payment_id='.$this->payment_id;
+    }
+
+    public function getPercentageFundedAttribute() {
+        return round($this->amount_received / $this->target_amount * 100);
+    }
+
+    public function getContributionsAttribute() {
+        return $this->deposits->count() ?? 0;
+    }
+
+    public function getQrCodeAttribute() {
+        return QrCode::format('png')->size(500)->generate($this->uri);
     }
 }

@@ -1,6 +1,6 @@
-XMR {{$amount_received}} /  XMR {{$project->target_amount}} Target
+XMR {{$project->amount_received}} /  XMR {{$project->target_amount}} Target
 
-{{$contributions}} contributions made.  {{$percentage}}%
+{{$project->contributions}} contributions made.  {{$project->percentage_funded}}%
 <br>
 
-{!! QrCode::size(400)->generate($project->uri); !!}
+<img src="data:image/png;base64,{!! base64_encode($project->qrcode) !!}">

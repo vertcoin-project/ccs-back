@@ -12,7 +12,7 @@
     <tr>
         <td><a href='{!! url('/projects/'.$project->payment_id); !!}'>{{ $project->payment_id }}</a></td>
         <td>{{$project->status}}</td>
-        <td>{{$project->amountReceived}} XMR</td>
+        <td>{{$project->amount_received}} XMR</td>
         <td>{{$project->target_amount}} XMR</td>
     </tr>
 @endforeach

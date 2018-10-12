@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Deposit;
+use App\Http\Resources\ProjectResource;
 use App\Project;
 use Illuminate\Http\Request;
-use Monero\Wallet;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class FundingController extends Controller
@@ -13,11 +12,17 @@ class FundingController extends Controller
     /**
      * Shows all projects
      *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\Resources\Json\AnonymousResourceCollection|\Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::all();
+        $projects = Project::paginate(15);
+        // If the request has header `Accept: */json`, return JSON
+        if ($request->wantsJson())
+        {
+            return ProjectResource::collection($projects);
+        }
         return view('projects.index')
             ->with('projects', $projects);
     }
@@ -27,23 +32,21 @@ class FundingController extends Controller
      *
      * @param $paymentId
      *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
+     * @return ProjectResource|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show($paymentId)
+    public function show(Request $request, $paymentId)
     {
         $project = Project::where('payment_id', $paymentId)->first();
         if (!$project) {
             abort(404);
         }
-        $contributions = $project->deposits->count();
-        $amountReceived = $project->deposits->sum('amount');
-        $percentage = round($amountReceived / $project->target_amount * 100);
+        if ($request->wantsJson())
+        {
+            return new ProjectResource($project);
+        }
         $qrcode = QrCode::format('png')->size(100)->generate($project->uri);
         return view('projects.show')
             ->with('project', $project)
-            ->with('contributions', $contributions)
-            ->with('percentage', $percentage)
-            ->with('qrcode', $qrcode)
-            ->with('amount_received', $amountReceived);
+            ->with('qrcode', $qrcode);
     }
 }
