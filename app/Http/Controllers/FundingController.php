@@ -30,23 +30,20 @@ class FundingController extends Controller
     /**
      * Shows the project based on the payment id
      *
+     * @param Request $request
      * @param $paymentId
-     *
      * @return ProjectResource|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(Request $request, $paymentId)
     {
-        $project = Project::where('payment_id', $paymentId)->first();
-        if (!$project) {
-            abort(404);
-        }
+        $project = Project::where('payment_id', $paymentId)->firstOrFail();
+
         if ($request->wantsJson())
         {
             return new ProjectResource($project);
         }
-        $qrcode = QrCode::format('png')->size(100)->generate($project->uri);
+
         return view('projects.show')
-            ->with('project', $project)
-            ->with('qrcode', $qrcode);
+            ->with('project', $project);
     }
 }

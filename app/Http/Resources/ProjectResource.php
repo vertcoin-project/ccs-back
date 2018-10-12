@@ -20,6 +20,8 @@ class ProjectResource extends JsonResource
             'amount_received' => $this->amount_received,
             'target_amount' => $this->target_amount,
             'percentage_funded' => $this->percentage_funded,
+            'qrcode' => ['base64' => base64_encode($this->qrcode)],
+            'contributions' => $this->contributions,
         ];
     }
 }

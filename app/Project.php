@@ -19,6 +19,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
  * @property-read string $uri
  * @property-read int $percentage_funded
  * @property-read int $contributions
+ * @property-read string $qrcode
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Project wherePaymentId($value)
@@ -53,7 +54,7 @@ class Project extends Model
         return $this->deposits->count() ?? 0;
     }
 
-    public function getQrCodeAttribute() {
+    public function getQrcodeAttribute() {
         return QrCode::format('png')->size(500)->generate($this->uri);
     }
 }
