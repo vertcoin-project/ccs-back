@@ -17,7 +17,7 @@ class CreateDepositsTable extends Migration
             $table->increments('id');
             $table->string('payment_id');
             $table->string('amount');
-            $table->unsignedInteger('time_received');
+            $table->dateTime('time_received');
             $table->string('tx_id');
             $table->unsignedInteger('block_received');
             $table->timestamps();

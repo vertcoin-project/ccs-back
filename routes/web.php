@@ -14,5 +14,5 @@
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('project/{paymentId}', ['as' => 'ffs', 'uses' => FundingController::class.'@show']);
+Route::get('projects', ['as' => 'ffs', 'uses' => FundingController::class.'@index']);
+Route::get('projects/{paymentId}', ['as' => 'ffs', 'uses' => FundingController::class.'@show']);

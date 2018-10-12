@@ -9,12 +9,21 @@ use Illuminate\Http\Request;
 class FundingController extends Controller
 {
     /**
-     * Generates the interstitial
+     * Shows all projects
      *
-     * @param $invoice
-     * @param null $currency
-     * @param bool $moneroOnly
-     * @param bool $shopifySite
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
+     */
+    public function index()
+    {
+        $projects = Project::all();
+        return view('projects.index')
+            ->with('projects', $projects);
+    }
+
+    /**
+     * Shows the project based on the payment id
+     *
+     * @param $paymentId
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
      */
@@ -27,7 +36,7 @@ class FundingController extends Controller
         $contributions = $project->deposits->count();
         $amountReceived = $project->deposits->sum('amount');
         $percentage = round($amountReceived / $project->target_amount * 100);
-        return view('ffs')
+        return view('projects.show')
             ->with('project', $project)
             ->with('contributions', $contributions)
             ->with('percentage', $percentage)

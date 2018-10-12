@@ -13,4 +13,8 @@ class Project extends Model
     {
         return $this->hasMany(Deposit::class, 'payment_id', 'payment_id');
     }
+
+    public function getAmountReceivedAttribute() {
+        return $this->deposits->sum('amount');
+    }
 }
