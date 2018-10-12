@@ -4,6 +4,25 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Project
+ *
+ * @property int $id
+ * @property string $payment_id
+ * @property string $target_amount
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Deposit[] $deposits
+ * @property-read mixed $amount_received
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Project wherePaymentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereTargetAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Project extends Model
 {
     /**
