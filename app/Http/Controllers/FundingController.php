@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Deposit;
 use App\Project;
 use Illuminate\Http\Request;
+use Monero\Wallet;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class FundingController extends Controller
 {
@@ -36,10 +38,12 @@ class FundingController extends Controller
         $contributions = $project->deposits->count();
         $amountReceived = $project->deposits->sum('amount');
         $percentage = round($amountReceived / $project->target_amount * 100);
+        $qrcode = QrCode::format('png')->size(100)->generate($project->uri);
         return view('projects.show')
             ->with('project', $project)
             ->with('contributions', $contributions)
             ->with('percentage', $percentage)
+            ->with('qrcode', $qrcode)
             ->with('amount_received', $amountReceived);
     }
 }

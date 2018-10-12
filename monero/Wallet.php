@@ -4,7 +4,6 @@ namespace Monero;
 
 use App\Project;
 use Carbon\Carbon;
-use jsonRPCClient;
 
 class Wallet
 {
