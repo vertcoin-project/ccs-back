@@ -27,9 +27,16 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereTargetAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $title
+ * @property int|null $merge_request_id
+ * @property string|null $commit_sha
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereCommitSha($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereMergeRequestId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Project whereTitle($value)
  */
 class Project extends Model
 {
+    protected $guarded = ['id'];
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

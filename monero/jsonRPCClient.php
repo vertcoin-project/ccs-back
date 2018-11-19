@@ -2,8 +2,9 @@
 
 namespace Monero;
 
-//json 2.0 rpc client
-use App\Exceptions\ConnectionException;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class jsonRPCClient
@@ -11,215 +12,181 @@ use App\Exceptions\ConnectionException;
  */
 class jsonRPCClient
 {
-    /**
-     * @var
-     */
-    private $url;
 
-    /**
-     * @var int
-     */
-    private $timeout;
-
-    /**
-     * @var bool
-     */
-    private $debug;
-
-    /**
-     * @var
-     */
+    /** @var string */
     private $username;
 
-    /**
-     * @var
-     */
+    /** @var string */
     private $password;
 
-    /**
-     * @var array
-     */
-    private $headers = [
-        'Connection: close',
-        'Content-Type: application/json',
-        'Accept: application/json',
-    ];
+    /** @var Client|null  */
+    private $client;
 
     /**
-     * jsonRPCClient constructor.
-     *
-     * @param $url
-     * @param int $timeout
-     * @param bool|false $debug
-     * @param array $headers
+     * JsonRPCClient constructor.
+     * @param null $client
      */
-    public function __construct($url, $timeout = 20, $debug = false, $headers = [])
+    public function __construct($client = null)
     {
-        $this->url = $url;
-        $this->timeout = $timeout;
-        $this->debug = $debug;
-        $this->headers = array_merge($this->headers, $headers);
+        if (empty($client)) {
+            $client = new Client([
+                'base_uri' => env('RPC_URL'),
+            ]);
+        }
+        $this->username = env('MONERO_USERNAME');
+        $this->password = env('MONERO_PASSWORD');
+        $this->client = $client;
     }
 
     /**
-     * Generic method executor
+     * Gets the balance
      *
-     * @param $method
-     * @param $params
-     *
-     * @return null
+     * @return int the overall value after inputs unlock
      */
-    public function __call($method, $params)
+    public function balance() : int
     {
-        return $this->execute($method, $params);
+        $response = $this->request('get_balance');
+        return $response['balance'];
     }
 
     /**
-     * Set auth credentials
+     * Gets the unlocked balance
      *
-     * @param $username
-     * @param $password
+     * @return int the spendable balance
      */
-    public function authentication($username, $password)
+    public function unlockedBalance() : int
     {
-        $this->username = $username;
-        $this->password = $password;
+        $response = $this->request('get_balance');
+        return $response['unlocked_balance'];
     }
 
     /**
-     * Get XMR bulk payments
+     * Gets the primary address
      *
-     * @param $payment_ids
-     * @param $block_height
-     *
-     * @return null
+     * @return string wallets primary address
      */
-    public function bulk_payments($payment_ids, $block_height)
+    public function address() : string
     {
-        return $this->execute('get_bulk_payments', $payment_ids, $block_height);
+        $response = $this->request('get_address');
+        return $response['address'];
     }
 
     /**
-     * Transfer XMR to another destination
+     * Gets the current block height
      *
-     * @param $amount
-     * @param $destination
-     * @param $payment_id
-     * @param $mixin
-     * @param int $unlock_time
-     *
-     * @return string
+     * @return int block height
      */
-    public function transferXMR($amount, $destination, $payment_id, $mixin, $unlock_time = 0)
+    public function blockHeight() : int
     {
-        $dest = ['amount' => intval(0 + $amount * 1000000000000), 'address' => $destination];
-        $params = [
-            'destinations' => [$dest],
-            'payment_id' => $payment_id,
-            'mixin' => $mixin,
-            'unlock_time' => $unlock_time,
-        ];
-        $response = $this->execute('transfer', $params);
-        $tx = trim($response['tx_hash'], '<>');
-
-        return $tx;
+        $response = $this->request('get_height');
+        return $response['height'];
+    }
+    /**
+     * Creates a new integrated address
+     *
+     * @return array ['integrated_address', 'payment_id']
+     */
+    public function createIntegratedAddress() : array
+    {
+        $response = $this->request('make_integrated_address');
+        return $response;
     }
 
-    public function mempoolTransfers()
+    /**
+     * Gets any incoming transactions
+     *
+     * @return array
+     */
+    public function incomingTransfers() : array
     {
-        $response = $this->execute('get_transfers', ['pool' => true]);
+        $response = $this->request('get_transfers', ['pool' => true, 'in' => true]);
 
         return $response;
     }
 
     /**
-     * Prepares the payload for CURL and evaluates the result from the RPC
+     * Checks for any payments made to the paymentIds
      *
-     * @param $procedure
-     * @param $params
-     * @param null $params2
+     * @param array     $paymentIds list of payment ids to be searched for
+     * @param int       $minHeight  the lowest block the search should start with
      *
-     * @return null
-     *
-     * @throws WalletErrorException
+     * @return array    payments received since min block height with a payment id provided
      */
-    public function execute($procedure, $params, $params2 = null)
+    public function payments($paymentIds, $minHeight) : array
     {
-        $id = mt_rand();
-        $payload = [
-            'jsonrpc' => '2.0',
-            'method' => $procedure,
-            'id' => $id,
-        ];
+        $response = $this->request('get_bulk_payments', ['payment_ids' => $paymentIds, 'min_block_height' => $minHeight]);
 
-        if (!empty($params)) {
-            if ($params2 != null) {
-                $payload['params']['payment_ids'] = $params;
-                $payload['params']['min_block_height'] = $params2;
-            } else {
-                if (is_array($params)) {
-                    // no keys
-                    //$params = array_values($params);
-                    $payload['params'] = $params;
-                }
-            }
-        }
-        if ($this->debug) {
-            print_r($payload);
-        }
-
-        $result = $this->doRequest($payload);
-        if (isset($result['id']) && $result['id'] == $id && array_key_exists('result', $result)) {
-            if ($this->debug) {
-                print_r($result['result']);
-            }
-
-            return $result['result'];
-        }
-
-        if (isset($result['error'])) {
-            throw new ConnectionException($result['error']['message']);
-        }
-
-        throw new ConnectionException('no response');
+        return $response;
     }
 
     /**
-     * Executes the CURL request.
+     * creates a uri for easier wallet parsing
      *
-     * @param $payload
+     * @param string    $address    address comprising of primary, sub or integrated address
+     * @param string    $paymentId  payment id when not using integrated addresses
+     * @param int       $amount     atomic amount requested
      *
-     * @return array|mixed
+     * @return string the uri string which can be used to generate a QR code
      */
-    public function doRequest($payload)
+    public function createUri($address, $paymentId = null, $amount = null) : string
     {
-        $ch = curl_init();
+        $response = $this->request('make_uri', ['address' => $address, 'amount' => $amount, 'payment_id' => $paymentId]);
 
-        curl_setopt($ch, CURLOPT_URL, $this->url);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'JSON-RPC PHP Client');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-        curl_setopt($ch, CURLOPT_VERBOSE, true);
-        if ($this->username && $this->password) {
-            curl_setopt($ch, CURLOPT_USERPWD, $this->username.':'.$this->password);
+        return $response['uri'];
+    }
+
+    /**
+     * Sets up the request data body
+     *
+     * @param string    $method name of the rpc command
+     * @param array     $params associative array of variables being passed to the method
+     *
+     * @return false|string will return a json string or false
+     */
+    private function preparePayload($method, $params)
+    {
+        $payload = [
+            'jsonrpc' => '2.0',
+            'id' => '0',
+            'method' => $method,
+            'params' => $params,
+        ];
+        return json_encode($payload);
+    }
+
+    /**
+     *
+     * @param string    $method name of the rpc command
+     * @param array     $params associative array of variables being passed to the method
+     *
+     * @return mixed the rpc query result
+     *
+     * @throws \RuntimeException
+     */
+    protected function request(string $method, array $params = [])
+    {
+        $payload = $this->preparePayload($method, $params);
+
+        try {
+            $response = $this->client->request('POST', '',[
+                'auth' => [$this->username, $this->password, 'digest'],
+                'body' => $payload,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ]
+            ]);
+
+            $body = $response->getBody();
+        } catch (GuzzleException $exception) {
+            Log::error($exception);
+            throw new \RuntimeException('Connection to node unsuccessful');
         }
+        $result = json_decode((string) $body, true);
+        if (isset($result['error'])) {
 
-        if ($this->debug) {
-            print_r(json_encode($payload)."\n");
-            print_r($ch);
+            throw new \RuntimeException($result['error']['message']);
         }
-
-        $result = curl_exec($ch);
-        $response = json_decode($result, true);
-
-        curl_close($ch);
-
-        return is_array($response) ? $response : [];
+        return $result['result'];
     }
 
 }

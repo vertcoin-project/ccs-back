@@ -15,9 +15,12 @@ class CreateProjectsTable extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('payment_id')->unique();
-            $table->string('target_amount');
-            $table->string('status')->default('open');
+            $table->string('title');
+            $table->string('payment_id')->nullable();
+            $table->string('address')->nullable();
+            $table->string('target_amount')->nullable();
+            $table->string('state')->default('opened');
+            $table->unsignedInteger('merge_request_id')->unique();
             $table->timestamps();
         });
     }

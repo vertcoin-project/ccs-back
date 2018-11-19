@@ -4,6 +4,7 @@ namespace Monero;
 
 use App\Project;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class Wallet
 {
@@ -39,49 +40,25 @@ class Wallet
     }
 
     /**
-     * Returns all balances (locked/unlocked) or exception state for site monitor
-     *
-     * @return array
-     */
-    public function balanceSiteMonitor()
-    {
-        $result = [];
-        $balance = $this->client->getbalance();
-        if (!$balance) {
-            $result['unlocked_balance'] = 'DOWN';
-            $result['balance'] = 'DOWN';
-
-            return $result;
-        }
-        $result['unlocked_balance'] = $balance['unlocked_balance'] / 1000000000000;
-        $result['balance'] = $balance['balance'] / 1000000000000;
-
-        return $result;
-    }
-
-    /**
      * Returns the actual available and useable balance (unlocked balance)
      *
      * @return float|int|mixed
      */
     public function balance()
     {
-        $balance = $this->client->getbalance();
-        $result = $balance['unlocked_balance'] / 1000000000000;
-
-        return $result;
+        return $this->client->balance();
     }
 
     public function mempoolTransfers()
     {
-        return $this->client->mempoolTransfers();
+        return $this->client->incomingTransfers();
     }
 
     public function bulkPayments($paymentIds)
     {
         $blockBuffer = 10;
 
-        return $this->client->bulk_payments($paymentIds, intval($this->wallet->last_scanned_block_height) - $blockBuffer);
+        return $this->client->payments($paymentIds, intval($this->wallet->last_scanned_block_height) - $blockBuffer);
     }
 
     /**
@@ -152,12 +129,7 @@ class Wallet
      */
     public function blockHeight()
     {
-        $result = $this->client->getheight();
-        if ($result && isset($result['height'])) {
-            return $result['height'];
-        }
-
-        return 0;
+        return $this->client->blockHeight();
     }
 
     /**
@@ -167,12 +139,7 @@ class Wallet
      */
     public function getAddress()
     {
-        $address = $this->client->getaddress();
-        if ($address != null) {
-            return $address['address'];
-        }
-
-        return 'Invalid';
+        return $this->client->address();
     }
 
     /**
@@ -182,11 +149,7 @@ class Wallet
      */
     public function createIntegratedAddress()
     {
-        try {
-            return $this->client->make_integrated_address();
-        } catch (\Throwable $e) {
-            return false;
-        }
+        return $this->client->createIntegratedAddress();
     }
 
     /**
@@ -206,12 +169,11 @@ class Wallet
     /**
      * gets all the payment_ids outstanding from the address_pool, we use these to check against the latest mined blocks
      *
-     * @return array
+     * @return Collection
      */
     public function getPaymentIds()
     {
-        $paymentIds = Project::pluck('payment_id'); //stop scanning for payment_ids after 24h
 
-        return $paymentIds;
+        return Project::pluck('payment_id'); //stop scanning for payment_ids after 24h
     }
 }
