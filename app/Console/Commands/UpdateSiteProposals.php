@@ -38,16 +38,21 @@ class UpdateSiteProposals extends Command
      */
     public function handle()
     {
-        $ffs = json_decode(\Storage::get('_data_ffs.json'));
-        $ffs[0]->proposals = array_merge($ffs[0]->proposals, $this->getNewProposals());
-        $yaml = json_encode($ffs, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
-        \Storage::put('new.json', $yaml);
+        $response = [
+            $this->ideaProposals(),
+            $this->fundingRequiredProposals(),
+            $this->workInProgressProposals(),
+        ];
+        $json = json_encode($response, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        \Storage::put('new.json', $json);
     }
 
-    public function getNewProposals()
+    public function ideaProposals()
     {
+        $group = new stdClass();
+        $group->stage = 'Ideas';
         $responseProposals = [];
-        $proposals = Project::where('gitlab_state', 'opened')->get();
+        $proposals = Project::where('gitlab_state', 'opened')->where('state', 'IDEA')->get();
         foreach ($proposals as $proposal) {
             $prop = new stdClass();
             $prop->name = $proposal->title;
@@ -56,6 +61,56 @@ class UpdateSiteProposals extends Command
             $prop->date = $proposal->gitlab_created_at->format('F j, Y');
             $responseProposals[] = $prop;
         }
-        return $responseProposals;
+        $group->proposals = $responseProposals;
+        return $group;
+    }
+
+    public function fundingRequiredProposals()
+    {
+        $group = new stdClass();
+        $group->stage = 'Funding Required';
+        $responseProposals = [];
+        $proposals = Project::where('gitlab_state', 'merged')->where('state', 'FUNDING-REQUIRED')->get();
+        foreach ($proposals as $proposal) {
+            $prop = new stdClass();
+            $prop->name = $proposal->title;
+            $prop->{'gitlab-url'} = $proposal->gitlab_url;
+            $prop->{'local-url'} = '#';
+            $prop->{'donate-url'} = '#';
+            $prop->percentage = 0;
+            $prop->amount = $proposal->target_amount;
+            $prop->{'amount-funded'} = $proposal->target_amount;
+            $prop->author = $proposal->gitlab_username;
+            $prop->date = $proposal->gitlab_created_at->format('F j, Y');
+            $responseProposals[] = $prop;
+        }
+        $group->proposals = $responseProposals;
+        return $group;
+    }
+
+    public function workInProgressProposals()
+    {
+        $group = new stdClass();
+        $group->stage = 'Work in Progress';
+        $responseProposals = [];
+        $proposals = Project::where('gitlab_state', 'merged')->where('state', 'WORK-IN-PROGRESS')->get();
+        foreach ($proposals as $proposal) {
+            $prop = new stdClass();
+            $prop->name = $proposal->title;
+            $prop->{'gitlab-url'} = $proposal->gitlab_url;
+            $prop->{'local-url'} = '#';
+            $prop->milestones = 4;
+            $prop->{'milestones-completed'} = 4;
+            $prop->{'milestones-percentage'} = 100;
+            $prop->percentage = 0;
+            $prop->amount = $proposal->target_amount;
+            $prop->{'amount-funded'} = $proposal->target_amount;
+            $prop->author = $proposal->gitlab_username;
+            $prop->date = $proposal->gitlab_created_at->format('F j, Y');
+            $responseProposals[] = $prop;
+        }
+        $group->proposals = $responseProposals;
+        return $group;
+
     }
 }

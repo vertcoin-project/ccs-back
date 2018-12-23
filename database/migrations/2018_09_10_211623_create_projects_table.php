@@ -20,6 +20,7 @@ class CreateProjectsTable extends Migration
             $table->string('address')->nullable();
             $table->string('target_amount')->nullable();
             $table->string('state')->default('OPENED');
+            $table->string('filename')->nullable();
             $table->unsignedInteger('merge_request_id')->unique();
             $table->string('gitlab_username');
             $table->string('gitlab_url');

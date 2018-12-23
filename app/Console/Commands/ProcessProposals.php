@@ -41,7 +41,7 @@ class ProcessProposals extends Command
         foreach ($files as $file) {
             if (strpos($file,'.md')) {
                 $amount['name'] = $file;
-                $amount['amount'] = $this->getAmountFromText($file);
+                $amount['values'] = $this->getAmountFromText($file);
                 $amounts[] = $amount;
             }
         }
@@ -52,20 +52,40 @@ class ProcessProposals extends Command
      * Gets the ffs amount requested from a file
      *
      * @param string $filename
-     * @return int
+     * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function getAmountFromText($filename = 'additional-gui-dev.md')
     {
         $input = Storage::get($filename);
         $lines = preg_split('/\r\n|\r|\n/', $input);
+        $values = [];
+        $flag = false;
+        $isPayoutLine = false;
+
         foreach($lines as $line) {
-            $line = str_replace(' ','', $line);
-            $details = explode(':', $line);
-            if ($details[0] === 'amount') {
-                return $details[1];
+            if ($line === '---') {
+                if ($flag === true) {
+                    break;
+                }
+                $flag = true;
+                continue;
             }
+            $details = explode(':', $line);
+            if (count($details) < 2) {
+                continue;
+            }
+            if ($details[0] === 'payouts') {
+                $isPayoutLine = true;
+                continue;
+            }
+            if ($isPayoutLine) {
+                $name = trim(str_replace('-','', $details[0]));
+                $values['payouts'][][$name] = ltrim($details[1]);
+                continue;
+            }
+            $values[$details[0]] = ltrim($details[1]);
         }
-        return 0;
+        return $values;
     }
 }
