@@ -6,7 +6,6 @@ use App\Project;
 use GitLab\Connection;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
 
 class fetchMergeRequests extends Command
 {
@@ -36,8 +35,6 @@ class fetchMergeRequests extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
     public function handle()
     {
@@ -45,44 +42,17 @@ class fetchMergeRequests extends Command
         $projects = $connection->mergeRequests('all');
 
         foreach ($projects as $project) {
+            $title = str_replace('[IDEA]','',$project->title);
             // create requests that are still pending
             $project = Project::firstOrNew([
-                'merge_request_id' => $project->id
+                'merge_request_id' => $project->id,
             ],[
-                'title' => $project->title,
-                'state' => $project->state
+                'title' => $title,
+                'gitlab_state' => $project->state,
+                'gitlab_username' => $project->author->username,
+                'gitlab_url' => $project->web_url,
             ]);
-            // check if there is a payment_id and an address
-            // check if the amount field has been supplied
             $project->save();
         }
-
-
-        // id, title, state, username,
-        // save merge requests
-        // compare to current merge requests
-        // if merge request is missing is it closed or merged
-        return;
-    }
-
-    /**
-     * Gets the ffs amount requested from a file
-     *
-     * @param string $filename
-     * @return int
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    public function getAmountFromText($filename = 'test-ffs.md')
-    {
-        $input = Storage::get($filename);
-        $lines = preg_split('/\r\n|\r|\n/', $input);
-        foreach($lines as $line) {
-            $line = str_replace(' ','', $line);
-            $details = explode(':', $line);
-            if ($details[0] === 'amount') {
-                return $details[1];
-            }
-        }
-        return 0;
     }
 }

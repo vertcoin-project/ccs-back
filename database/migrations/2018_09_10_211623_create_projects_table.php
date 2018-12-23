@@ -19,8 +19,12 @@ class CreateProjectsTable extends Migration
             $table->string('payment_id')->nullable();
             $table->string('address')->nullable();
             $table->string('target_amount')->nullable();
-            $table->string('state')->default('opened');
+            $table->string('state')->default('OPENED');
             $table->unsignedInteger('merge_request_id')->unique();
+            $table->string('gitlab_username');
+            $table->string('gitlab_url');
+            $table->string('gitlab_state')->default('opened');
+            $table->timestamp('gitlab_created_at');
             $table->timestamps();
         });
     }

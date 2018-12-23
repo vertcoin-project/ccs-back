@@ -37,6 +37,8 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 class Project extends Model
 {
     protected $guarded = ['id'];
+
+    protected $dates = ['gitlab_created_at', 'created_at', 'updated_at'];
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
