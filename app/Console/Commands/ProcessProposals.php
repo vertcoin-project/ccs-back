@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Project;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
@@ -36,20 +37,30 @@ class ProcessProposals extends Command
      */
     public function handle()
     {
-        $amounts = [];
+        $projects = Project::whereNull('filename');
+        $details = [];
         $files = Storage::files('ffs-proposals');
         foreach ($files as $file) {
             if (strpos($file,'.md')) {
-                $amount['name'] = $file;
-                $amount['values'] = $this->getAmountFromText($file);
-                $amounts[] = $amount;
+                $detail['name'] = $file;
+                $detail['values'] = $this->getAmountFromText($file);
+                $details[] = $detail['values']['title'];
+                $project = $projects->where('title', $detail['values']['title'])->first();
+                if ($project) {
+                    $project->filename = $file;
+                    $project->target_amount = $detail['values']['amount'];
+                    $project->save();
+                }
             }
         }
-        dd($amounts);
+        foreach ($details as $det) {
+            $this->line($det);
+        }
+
     }
 
     /**
-     * Gets the ffs amount requested from a file
+     * Gets the ffs variables out the top of the file
      *
      * @param string $filename
      * @return array
