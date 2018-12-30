@@ -46,4 +46,17 @@ class FundingController extends Controller
         return view('projects.show')
             ->with('project', $project);
     }
+
+    public function donate(Request $request, $paymentId)
+    {
+        $project = Project::where('payment_id', $paymentId)->firstOrFail();
+
+        if ($request->wantsJson())
+        {
+            return new ProjectResource($project);
+        }
+
+        return view('projects.donate')
+            ->with('project', $project);
+    }
 }
