@@ -6,7 +6,7 @@ use App\Deposit;
 use App\Project;
 use Illuminate\Console\Command;
 use Monero\Transaction;
-use Monero\Wallet;
+use Monero\WalletOld;
 
 class walletnotify extends Command
 {
@@ -41,7 +41,7 @@ class walletnotify extends Command
      */
     public function handle()
     {
-        $wallet = new Wallet();
+        $wallet = new WalletOld();
 
         $blockheight = $wallet->blockHeight();
         if ($blockheight < 1) {
