@@ -10,31 +10,41 @@ use Illuminate\Support\Facades\Log;
  * Class jsonRPCClient
  * JSON 2.0 RPC Client for cryptocurrency wallet
  */
-class jsonRPCClient
+class jsonRPCClient implements Contracts\WalletManager
 {
 
     /** @var string */
-    private $username;
+    private $username = 'test2';
 
     /** @var string */
-    private $password;
+    private $password = 'test2';
+
+    /** @var string  */
+    private $url = 'http://127.0.0.1:28080/json_rpc';
 
     /** @var Client|null  */
     private $client;
 
     /**
      * JsonRPCClient constructor.
+     * @param array $options
      * @param null $client
      */
-    public function __construct($client = null)
+    public function __construct($options, $client = null)
     {
+        $this->username = $options['username'] ?? $this->username;
+        $this->password = $options['password'] ?? $this->password;
+        $this->url = $options['url'] ?? $this->url;
+
         if (empty($client)) {
             $client = new Client([
-                'base_uri' => env('RPC_URL'),
+                'base_uri' => $this->url,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ]
             ]);
         }
-        $this->username = env('MONERO_USERNAME');
-        $this->password = env('MONERO_PASSWORD');
+
         $this->client = $client;
     }
 
@@ -136,6 +146,16 @@ class jsonRPCClient
     }
 
     /**
+     * creates a random 64 char payment id
+     *
+     * @return string
+     */
+    public function generatePaymentId(): string
+    {
+        return bin2hex(openssl_random_pseudo_bytes(32));
+    }
+
+    /**
      * Sets up the request data body
      *
      * @param string    $method name of the rpc command
@@ -155,6 +175,7 @@ class jsonRPCClient
     }
 
     /**
+     * Send off request to rpc server
      *
      * @param string    $method name of the rpc command
      * @param array     $params associative array of variables being passed to the method
