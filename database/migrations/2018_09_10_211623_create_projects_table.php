@@ -18,7 +18,10 @@ class CreateProjectsTable extends Migration
             $table->string('title');
             $table->string('payment_id')->nullable();
             $table->string('address')->nullable();
+            $table->string('address_uri')->nullable();
+            $table->string('qr_code')->nullable();
             $table->string('target_amount')->nullable();
+            $table->string('raised_amount')->nullable();
             $table->string('state')->default('OPENED');
             $table->string('filename')->nullable();
             $table->unsignedInteger('merge_request_id')->unique();

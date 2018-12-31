@@ -51,10 +51,6 @@ class Project extends Model
         return $this->deposits->sum('amount');
     }
 
-    public function getUriAttribute() {
-        return 'monero:'.env('WALLET_ADDRESS').'tx_payment_id='.$this->payment_id;
-    }
-
     public function getPercentageFundedAttribute() {
         return round($this->amount_received / $this->target_amount * 100);
     }
@@ -63,7 +59,12 @@ class Project extends Model
         return $this->deposits->count() ?? 0;
     }
 
-    public function getQrcodeAttribute() {
+    public function generateQrcode() {
         return QrCode::format('png')->size(500)->generate($this->uri);
+    }
+
+    public function getQrCodeSrcAttribute() {
+        $encoded = base64_encode($this->generateQrcode());
+        return "data:image/png;base64, {$encoded}";
     }
 }

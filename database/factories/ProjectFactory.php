@@ -8,7 +8,11 @@ $factory->define(\App\Project::class, function (Faker $faker) {
     return [
         'title' => $faker->sentence(),
         'payment_id' => $faker->sha256,
+        'address' => $faker->sha256,
+        'address_uri' => "monero:{$faker->sha256}",
+        'qr_code' => $faker->file(),
         'target_amount' => $faker->randomFloat(2, 0, 2000),
+        'raised_amount' => $faker->randomFloat(2, 0, 2000),
         'state' => $state,
         'merge_request_id' => $faker->randomNumber(6),
         'gitlab_username' => $faker->userName,
