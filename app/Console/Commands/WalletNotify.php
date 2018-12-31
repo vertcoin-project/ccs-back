@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use Monero\Transaction;
 use Monero\WalletOld;
 
-class walletnotify extends Command
+class walletNotify extends Command
 {
     /**
      * The name and signature of the console command.
@@ -135,7 +135,7 @@ class walletnotify extends Command
      *
      * @param Transaction $transaction
      *
-     * @return bool
+     * @return Deposit
      */
     public function createDeposit(Transaction $transaction)
     {
