@@ -37,7 +37,6 @@ class ProcessProposals extends Command
      */
     public function handle()
     {
-        $projects = Project::whereNull('filename');
         $details = [];
         $files = Storage::files('ffs-proposals');
         foreach ($files as $file) {
@@ -45,9 +44,12 @@ class ProcessProposals extends Command
                 $detail['name'] = $file;
                 $detail['values'] = $this->getAmountFromText($file);
                 $details[] = $detail['values']['title'];
-                $project = $projects->where('title', $detail['values']['title'])->first();
+                $project = Project::where('title', $detail['values']['title'])->first();
                 if ($project) {
                     $project->filename = $file;
+                    if ($project->state === 'IDEA') {
+                        $project->state = 'FUNDING-REQUIRED';
+                    }
                     $project->target_amount = $detail['values']['amount'];
                     $project->save();
                 }

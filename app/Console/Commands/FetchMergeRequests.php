@@ -42,12 +42,17 @@ class fetchMergeRequests extends Command
         $projects = $connection->mergeRequests('all');
 
         foreach ($projects as $project) {
+            $state = 'OPENED';
+            if (strpos($project->title, '[IDEA]') !== false) {
+                $state = 'IDEA';
+            }
             $title = str_replace('[IDEA]','',$project->title);
             // create requests that are still pending
             $project = Project::firstOrNew([
                 'merge_request_id' => $project->id,
             ],[
-                'title' => $title,
+                'state' => $state,
+                'title' => trim($title),
                 'gitlab_state' => $project->state,
                 'gitlab_username' => $project->author->username,
                 'gitlab_url' => $project->web_url,
@@ -55,4 +60,10 @@ class fetchMergeRequests extends Command
             $project->save();
         }
     }
+
+    // fetch the idea
+    // check for merged merges.
+    // if proposal merged search for its md file
+    //issue payment_id and payment page
+    //
 }
