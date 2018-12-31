@@ -106,7 +106,7 @@
                         <div class="row middle-xs between-xs">
                             <p class="author-list"><span><img src="/img/author-filled.png"></span>{{$project->gitlab_username}}</p>
                             <p class="date-list"><span><img src="/img/calendar.png"></span>{{$project->github_created_at}}</p>
-                            <p class="bar-fund-status">Raised <span class="progress-number-funded">{{$project->target_amount}}</span> of <span class="progress-number-goal">[AMOUNT RAISED HERE]</span> XMR</p>
+                            <p class="bar-fund-status">Raised <span class="progress-number-funded">{{$project->raised_amount}}</span> of <span class="progress-number-goal">{{$project->target_amount}}</span> XMR</p>
                         </div>
                         <div class="progress-bar">
                             <span class="fund-progress" style="width: [PERCENTAGE HERE]%"></span>
@@ -129,7 +129,7 @@
                                 <p>1. Choose the amount of XMR you wish to contribute to this proposal</p>
                                 <p>2. Scan this QR code or tap to open in your Monero wallet app:</p>
                                 <p>
-                                    <a href="[MONERO LINK HERE]" class="qr"><img src="[PATH TO QR CODE HERE]"/></a>
+                                    <a href="{{$project->address_uri}}" class="qr"><img src="{{ $project->qrCodeSrc}}"/></a>
                                 </p>
                                 <p>3. Send! Thank you! You are amazing!</p>
                             </div>
