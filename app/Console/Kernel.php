@@ -2,6 +2,11 @@
 
 namespace App\Console;
 
+use App\Console\Commands\fetchMergeRequests;
+use App\Console\Commands\GenerateAddresses;
+use App\Console\Commands\ProcessProposals;
+use App\Console\Commands\UpdateSiteProposals;
+use App\Console\Commands\walletNotify;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -24,8 +29,16 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+         $schedule->command(fetchMergeRequests::class)
+            ->everyMinute();
+        $schedule->command(GenerateAddresses::class)
+            ->everyMinute();
+        $schedule->command(ProcessProposals::class)
+            ->everyMinute();
+        $schedule->command(UpdateSiteProposals::class)
+            ->everyMinute();
+        $schedule->command(walletNotify::class)
+            ->everyMinute();
     }
 
     /**

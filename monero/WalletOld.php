@@ -61,8 +61,8 @@ class WalletOld
     /**
      * Scans the monero blockchain for transactions for the payment ids
      *
-     * @param $blockheight
-     * @param $paymentIDs
+     * @param int $blockheight
+     * @param Collection $paymentIDs
      *
      * @return array|Transaction
      */
