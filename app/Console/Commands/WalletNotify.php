@@ -87,6 +87,8 @@ class walletNotify extends Command
         $project = Project::where('payment_id', $transaction->paymentId)->first();
         if ($project) {
             // update the project total
+            $project->raised_amount = $project->raised_amount + $transaction->amount;
+            $project->save();
         }
 
         return;
