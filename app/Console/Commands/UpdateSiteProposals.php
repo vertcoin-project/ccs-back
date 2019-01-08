@@ -44,7 +44,7 @@ class UpdateSiteProposals extends Command
             $this->workInProgressProposals(),
         ];
         $json = json_encode($response, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
-        \Storage::put('new.json', $json);
+        \Storage::put('ffs.json', $json);
     }
 
     public function ideaProposals()
