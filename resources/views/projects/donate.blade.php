@@ -78,9 +78,7 @@
     <div class="mob bot-nav white-nav">
         <div class="row middle-xs">
             <div class="col-xs-6">
-                <a href="/
-
-                    "><img src="/img/monero-logo.png" alt="Monero Logo" class="monero-logo"></a>
+                <a href="/"><img src="/img/monero-logo.png" alt="Monero Logo" class="monero-logo"></a>
             </div>
         </div>
     </div>
@@ -92,7 +90,7 @@
                 <div class="col-xs-12">
                     <p><a href="/forum-funding-system/">Forum Funding System</a></p>
                     <p><a href="/forum-funding-system/funding-required/">Funding Required</a></p>
-                    <p><a href="/forum-funding-system/funding-required/">{{$project->title}}</a></p>
+                    <p><a href="/forum-funding-system/proposals/{{pathinfo($project->filename, PATHINFO_FILENAME)}}.html">{{$project->title}}</a></p>
                     <p class="bread-active">Contribute</p>
                 </div>
             </div>
@@ -101,15 +99,15 @@
         <section class="container full">
             <div class="info-block">
                 <div class="row">
-                    <div class="col-xs-12">
+                    <div class="col-xs-12"> 
                         <h2>{{$project->title}}</h2>
                         <div class="row middle-xs between-xs">
                             <p class="author-list"><span><img src="/img/author-filled.png"></span>{{$project->author}}</p>
-                            <p class="date-list"><span><img src="/img/calendar.png"></span>{{$project->github_created_at}}</p>
+                            <p class="date-list"><span><img src="/img/calendar.png"></span>{{date('F j, Y', strtotime($project->created_at))}}</p>
                             <p class="bar-fund-status">Raised <span class="progress-number-funded">{{$project->raised_amount}}</span> of <span class="progress-number-goal">{{$project->target_amount}}</span> XMR</p>
                         </div>
                         <div class="progress-bar">
-                            <span class="fund-progress" style="width: [PERCENTAGE HERE]%"></span>
+                            <span class="fund-progress" style="width: {{min(100, intval($project->raised_amount * 100 / $project->target_amount))}}%"></span>
                         </div>
                         <p>Your contribution should be visible within 5 minutes of you sending your contribution. If for some reason it is not there, please contact a member of the Core Team!</p>
                     </div>
@@ -129,30 +127,19 @@
                                 <p>1. Choose the amount of XMR you wish to contribute to this proposal</p>
                                 <p>2. Scan this QR code or tap to open in your Monero wallet app:</p>
                                 <p>
-                                    <a href="{{$project->address_uri}}" class="qr"><img src="{{ $project->qrCodeSrc}}"/></a>
+                                    <a href="{{$project->address_uri}}" class="qr"><img src="{{$project->qrCodeSrc}}"/></a>
                                 </p>
                                 <p>3. Send! Thank you! You are amazing!</p>
                             </div>
                         </div>
                         <input class="input" name="tabs" type="radio" id="tab-2"/>
-                        <label class="label" for="tab-2">Integrated Address</label>
+                        <label class="label" for="tab-2">Address</label>
                         <div class="panel col-xs-12">
                             <div class="panel-segment">
-                                <h3>Contribute using an integrated address</h3>
+                                <h3>Contribute using an address</h3>
                                 <p>1. Choose the amount of XMR you wish to contribute to this proposal</p>
                                 <p>2. Enter the following XMR address:</p>   <p class="string">{{$project->address}}</p>
                                 <p>3. Send! Thank you! You are amazing!</p>
-                            </div>
-                        </div>
-                        <input class="input" name="tabs" type="radio" id="tab-3"/>
-                        <label class="label" for="tab-3">Payment ID</label>
-                        <div class="panel col-xs-12">
-                            <div class="panel-segment">
-                                <h3>Contribute using a payment ID</h3>
-                                <p>1. Choose the amount of XMR you wish to contribute to this proposal</p>
-                                <p>2. Enter the following XMR address:</p>   <p class="string">{{ env('WALLET_ADDRESS') }}</p>
-                                <p>3. Enter the following payment ID that is unique to this proposal:</p>                 <p class="string">{{$project->payment_id}}</p>
-                                <p>4. Send! Thank you! You're amazing!</p>
                             </div>
                         </div>
                     </div>

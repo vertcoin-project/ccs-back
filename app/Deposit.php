@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
  * App\Deposit
  *
  * @property int $id
- * @property string $payment_id
+ * @property int $subaddr_index
  * @property string $amount
  * @property string $time_received
  * @property string $tx_id

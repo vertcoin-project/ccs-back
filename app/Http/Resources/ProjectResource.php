@@ -15,7 +15,7 @@ class ProjectResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'payment_id' => $this->payment_id,
+            'subaddr_index' => $this->subaddr_index,
             'status' => $this->status,
             'amount_received' => $this->amount_received,
             'target_amount' => $this->target_amount,

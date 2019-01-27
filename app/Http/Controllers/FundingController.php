@@ -31,12 +31,12 @@ class FundingController extends Controller
      * Shows the project based on the payment id
      *
      * @param Request $request
-     * @param $paymentId
+     * @param $subaddr_index
      * @return ProjectResource|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(Request $request, $paymentId)
+    public function show(Request $request, $subaddr_index)
     {
-        $project = Project::where('payment_id', $paymentId)->firstOrFail();
+        $project = Project::where('subaddr_index', $subaddr_index)->firstOrFail();
 
         if ($request->wantsJson())
         {
@@ -47,9 +47,9 @@ class FundingController extends Controller
             ->with('project', $project);
     }
 
-    public function donate(Request $request, $paymentId)
+    public function donate(Request $request, $subaddr_index)
     {
-        $project = Project::where('payment_id', $paymentId)->firstOrFail();
+        $project = Project::where('subaddr_index', $subaddr_index)->firstOrFail();
 
         if ($request->wantsJson())
         {

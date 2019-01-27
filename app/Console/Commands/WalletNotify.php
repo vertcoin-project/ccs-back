@@ -50,20 +50,11 @@ class walletNotify extends Command
             return;
         }
 
-        // check mempool
-        $transactionsMempool = $wallet->scanMempool($blockheight);
-        $transactionsMempool->each(function ($transaction) use ($wallet) {
+        $min_height = Deposit::max('block_received');
+        $transactions = $wallet->scanIncomingTransfers(max($min_height, 10) - 10);
+        $transactions->each(function ($transaction) use ($wallet) {
             $this->processPayment($transaction);
         });
-
-        $paymentIDs = $wallet->getPaymentIds();
-        if (count($paymentIDs)) {
-            // check blockchain
-            $transactions = $wallet->scanBlocks($blockheight, $paymentIDs);
-            $transactions->each(function ($transaction) use ($wallet) {
-                $this->processPayment($transaction);
-            });
-        }
 
         $this->updateAllConfirmations($blockheight);
     }
@@ -80,14 +71,14 @@ class walletNotify extends Command
             return null;
         }
         $this->info('amount: '.$transaction->amount / 1000000000000 .' confirmations:'.$transaction->confirmations.' tx_hash:'.$transaction->id);
-        $this->info('paymentid: '.$transaction->paymentId);
+        $this->info('subaddr_index: '.$transaction->subaddr_index);
 
         $this->createDeposit($transaction);
 
-        $project = Project::where('payment_id', $transaction->paymentId)->first();
+        $project = Project::where('subaddr_index', $transaction->subaddr_index)->first();
         if ($project) {
             // update the project total
-            $project->raised_amount = $project->raised_amount + $transaction->amount;
+            $project->raised_amount = $project->raised_amount + $transaction->amount * 1e-12;
             $project->save();
         }
 
@@ -144,7 +135,7 @@ class walletNotify extends Command
         $deposit->tx_id = $transaction->id;
         $deposit->amount = $transaction->amount;
         $deposit->confirmations = $transaction->confirmations;
-        $deposit->payment_id = $transaction->paymentId;
+        $deposit->subaddr_index = $transaction->subaddr_index;
         $deposit->time_received = $transaction->time_received;
         $deposit->block_received = $transaction->block_height;
         $deposit->save();

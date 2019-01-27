@@ -106,7 +106,7 @@ class UpdateSiteProposals extends Command
     {
         $prop = new stdClass();
         $prop->name = $proposal->title;
-        $prop->{'donate-url'} = url("projects/{$proposal->payment_id}/donate");
+        $prop->{'donate-url'} = url("projects/{$proposal->subaddr_index}/donate");
         $prop->{'gitlab-url'} = $proposal->gitlab_url;
         $prop->{'local-url'} = '/forum-funding-system/proposals/'. pathinfo($proposal->filename, PATHINFO_FILENAME) . '.html';
         $prop->milestones = $proposal->milestones;

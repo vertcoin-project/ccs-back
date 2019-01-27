@@ -91,14 +91,18 @@ class jsonRPCClient implements Contracts\WalletManager
         $response = $this->request('get_height');
         return $response['height'];
     }
+
     /**
-     * Creates a new integrated address
+     * Creates a new subaddress
      *
-     * @return array ['integrated_address', 'payment_id']
+     * @param int       $account_index  account index to create subaddress (maajor index)
+     * @param string    $label          label to assign to new subaddress
+     * 
+     * @return array ['address', 'address_index']
      */
-    public function createIntegratedAddress() : array
+    public function createSubaddress($account_index = 0, $label = '') : array
     {
-        $response = $this->request('make_integrated_address');
+        $response = $this->request('create_address', ['account_index' => $account_index, 'label' => $label]);
         return $response;
     }
 
@@ -133,12 +137,12 @@ class jsonRPCClient implements Contracts\WalletManager
      * creates a uri for easier wallet parsing
      *
      * @param string    $address    address comprising of primary, sub or integrated address
-     * @param string    $paymentId  payment id when not using integrated addresses
      * @param int       $amount     atomic amount requested
+     * @param string    $paymentId  payment id when not using integrated addresses
      *
      * @return string the uri string which can be used to generate a QR code
      */
-    public function createUri($address, $paymentId = null, $amount = null) : string
+    public function createUri($address, $amount = null, $paymentId = null) : string
     {
         $response = $this->request('make_uri', ['address' => $address, 'amount' => $amount, 'payment_id' => $paymentId]);
 

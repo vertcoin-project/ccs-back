@@ -37,11 +37,11 @@ interface WalletManager
     public function blockHeight();
 
     /**
-     * Creates a new integrated address
+     * Creates a new subaddress
      *
-     * @return array ['integrated_address', 'payment_id']
+     * @return array ['address', 'address_index']
      */
-    public function createIntegratedAddress();
+    public function createSubaddress();
 
     /**
      * Gets any incoming transactions
@@ -64,12 +64,12 @@ interface WalletManager
      * creates a uri for easier wallet parsing
      *
      * @param string    $address    address comprising of primary, sub or integrated address
-     * @param string    $paymentId  payment id when not using integrated addresses
      * @param int       $amount     atomic amount requested
+     * @param string    $paymentId  payment id when not using integrated addresses
      *
      * @return string the uri string which can be used to generate a QR code
      */
-    public function createUri($address, $paymentId = null, $amount = null);
+    public function createUri($address, $amount = null, $paymentId = null);
 
     /**
      * creates a random 64 char payment id

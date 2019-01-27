@@ -17,7 +17,7 @@ class CreateProjectsTable extends Migration
             $table->increments('id');
             $table->string('author');
             $table->string('title');
-            $table->string('payment_id')->nullable();
+            $table->unsignedInteger('subaddr_index')->nullable();
             $table->string('address')->nullable();
             $table->string('address_uri')->nullable();
             $table->string('qr_code')->nullable();

@@ -28,12 +28,12 @@ class WalletOld
     public function getPaymentAddress()
     {
 
-        $integratedAddress = $this->createIntegratedAddress();
-        if (!$integratedAddress) {
+        $subaddress = $this->createSubaddress();
+        if (!$subaddress) {
             return ['address' => 'not valid'];
         }
 
-        return ['address' => $integratedAddress['integrated_address'], 'paymentId' => $integratedAddress['payment_id']];
+        return ['address' => $subaddress['address'], 'subaddr_index' => $subaddress['address_index']];
     }
 
     /**
@@ -46,71 +46,37 @@ class WalletOld
         return $this->client->balance();
     }
 
-    public function mempoolTransfers()
-    {
-        return $this->client->incomingTransfers();
-    }
-
-    public function bulkPayments($paymentIds)
-    {
-        $blockBuffer = 10;
-
-        return $this->client->payments($paymentIds, intval($this->wallet->last_scanned_block_height) - $blockBuffer);
-    }
-
-    /**
-     * Scans the monero blockchain for transactions for the payment ids
-     *
-     * @param int $blockheight
-     * @param Collection $paymentIDs
-     *
-     * @return array|Transaction
-     */
-    public function scanBlocks($blockheight, $paymentIDs)
-    {
-        $response = $this->bulkPayments($paymentIDs);
-        $address = $this->getAddress();
-        $transactions = [];
-        if ($response && isset($response['payments'])) {
-            foreach ($response['payments'] as $payment) {
-                $transaction = new Transaction(
-                    $payment['tx_hash'],
-                    $payment['amount'],
-                    $address,
-                    $blockheight - $payment['block_height'],
-                    0,
-                    Carbon::now(),
-                    $payment['payment_id'],
-                    $payment['block_height']
-                );
-                $transactions[] = $transaction;
-            }
-        }
-
-        return collect($transactions);
-    }
-
     /**
      * @param $blockheight
+     * @param $account_index
      *
      * @return \Illuminate\Support\Collection
      */
-    public function scanMempool($blockheight)
+    public function scanIncomingTransfers($min_height = 0, $account_index = 0)
     {
-        $address = $this->getAddress();
+        $response = $this->client->incomingTransfers($min_height);
+        if (!$response) {
+            return collect([]);
+        }
+
         $transactions = [];
-        $response = $this->mempoolTransfers();
-        if ($response && isset($response['pool'])) {
-            foreach ($response['pool'] as $payment) {
+        foreach (['pool', 'in'] as $entry) {
+            if (!isset($response[$entry])) {
+                continue;
+            }
+            foreach ($response[$entry] as $payment) {
+                if ($payment['subaddr_index']['major'] != $account_index) {
+                    continue;
+                }
                 $transaction = new Transaction(
                     $payment['txid'],
                     $payment['amount'],
-                    $address,
-                    0,
+                    $payment['address'],
+                    $payment['confirmations'],
                     0,
                     Carbon::now(),
-                    $payment['payment_id'],
-                    $blockheight
+                    $payment['subaddr_index']['minor'],
+                    $payment['height']
                 );
                 $transactions[] = $transaction;
             }
@@ -140,35 +106,34 @@ class WalletOld
     }
 
     /**
-     * Returns XMR integrated address
+     * Returns XMR subaddress
      *
      * @return mixed
      */
-    public function createIntegratedAddress()
+    public function createSubaddress()
     {
-        return $this->client->createIntegratedAddress();
+        return $this->client->createSubaddress();
     }
 
     /**
-     * @param $amount
      * @param $address
-     * @param $paymentId
+     * @param $amount
      *
      * @return string
      */
-    public function createQrCodeString($address, $amount = null, $paymentId = null): string
+    public function createQrCodeString($address, $amount = null): string
     {
-        return $this->client->createUri($address, $amount, $paymentId);
+        return $this->client->createUri($address, $amount);
     }
 
     /**
-     * gets all the payment_ids outstanding from the address_pool, we use these to check against the latest mined blocks
+     * gets all the subaddr_indexes outstanding from the address_pool, we use these to check against the latest mined blocks
      *
      * @return Collection
      */
-    public function getPaymentIds()
+    public function getSubaddressIndexes()
     {
 
-        return Project::pluck('payment_id'); //stop scanning for payment_ids after 24h
+        return Project::pluck('subaddr_index'); //stop scanning for subaddr_index after 24h
     }
 }

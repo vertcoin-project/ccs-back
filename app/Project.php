@@ -9,14 +9,14 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
  * App\ProjectResource
  *
  * @property int $id
- * @property string $payment_id
+ * @property int $subaddr_index
  * @property string $target_amount
  * @property string $status
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Deposit[] $deposits
  * @property-read mixed $amount_received
- * @property-read string $uri
+ * @property-read string $address_uri
  * @property-read int $percentage_funded
  * @property-read int $contributions
  * @property-read string $qrcode
@@ -43,7 +43,7 @@ class Project extends Model
      */
     public function deposits()
     {
-        return $this->hasMany(Deposit::class, 'payment_id', 'payment_id');
+        return $this->hasMany(Deposit::class, 'subaddr_index', 'subaddr_index');
     }
 
     public function getAmountReceivedAttribute() {

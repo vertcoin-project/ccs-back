@@ -12,7 +12,7 @@ class ProjectsTableSeeder extends Seeder
     public function run()
     {
         factory(\App\Project::class, 20)->create()->each(function ($p) {
-            $p->deposits()->saveMany(factory(\App\Deposit::class, rand(0,12))->make(['payment_id' => $p->payment_id]));
+            $p->deposits()->saveMany(factory(\App\Deposit::class, rand(0,12))->make(['subaddr_index' => $p->subaddr_index]));
         });
     }
 }

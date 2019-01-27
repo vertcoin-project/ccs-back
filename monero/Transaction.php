@@ -16,7 +16,7 @@ class Transaction
 
     public $confirmations;
 
-    public $payment_id;
+    public $subaddr_index;
 
     public $block_height;
 
@@ -31,7 +31,7 @@ class Transaction
      * @param $timeReceived
      * @param $paymentId
      */
-    public function __construct($id, $amount, $address, $confirmations, $time, $timeReceived, $paymentId = null, $blockheight = null)
+    public function __construct($id, $amount, $address, $confirmations, $time, $timeReceived, $subaddr_index = null, $blockheight = null)
     {
         $this->amount = $amount;
         $this->time_received = $timeReceived;
@@ -39,7 +39,7 @@ class Transaction
         $this->address = $address;
         $this->id = $id;
         $this->confirmations = $confirmations;
-        $this->payment_id = $paymentId;
+        $this->subaddr_index = $subaddr_index;
         $this->block_height = $blockheight;
         $this->correctTimeRecieved();
     }

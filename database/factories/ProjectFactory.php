@@ -7,7 +7,7 @@ $factory->define(\App\Project::class, function (Faker $faker) {
     $status = $faker->randomElement(['opened', 'closed', 'locked', 'merged']);
     return [
         'title' => $faker->sentence(),
-        'payment_id' => $faker->sha256,
+        'subaddr_index' => $faker->randomNumber(),
         'address' => $faker->sha256,
         'address_uri' => "monero:{$faker->sha256}",
         'qr_code' => $faker->file(),

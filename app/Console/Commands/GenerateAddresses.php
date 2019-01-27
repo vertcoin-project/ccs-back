@@ -40,16 +40,15 @@ class GenerateAddresses extends Command
      */
     public function handle()
     {
-        $projects = Project::whereNotNull('filename')->whereNull('payment_id')->where('state', 'FUNDING-REQUIRED')->get();
+        $projects = Project::whereNotNull('filename')->whereNull('address')->where('state', 'FUNDING-REQUIRED')->get();
         $wallet = new WalletOld();
         foreach ($projects as $project) {
-
             $addressDetails = $wallet->getPaymentAddress();
             $project->address_uri = $wallet->createQrCodeString($addressDetails['address']);
             $project->address = $addressDetails['address'];
-            $project->payment_id = $addressDetails['paymentId'];
-            Storage::disk('public')->put("/img/qrcodes/{$project->payment_id}.png", $project->generateQrcode());
-            $project->qr_code = "img/qrcodes/{$project->payment_id}.png";
+            $project->subaddr_index = $addressDetails['subaddr_index'];
+            Storage::disk('public')->put("/img/qrcodes/{$project->subaddr_index}.png", $project->generateQrcode());
+            $project->qr_code = "img/qrcodes/{$project->subaddr_index}.png";
             $project->raised_amount = 0;
             $project->save();
         }
