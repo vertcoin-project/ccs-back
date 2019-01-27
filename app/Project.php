@@ -59,7 +59,7 @@ class Project extends Model
     }
 
     public function generateQrcode() {
-        return QrCode::format('png')->size(500)->generate($this->uri);
+        return QrCode::format('png')->size(500)->generate($this->address_uri);
     }
 
     public function getQrCodeSrcAttribute() {
