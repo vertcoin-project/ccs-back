@@ -107,6 +107,7 @@ class UpdateSiteProposals extends Command
             $prop->name = $proposal->title;
             $prop->{'gitlab-url'} = $proposal->gitlab_url;
             $prop->{'local-url'} = '#';
+            $prop->milestones = $proposal->milestones;
             $prop->{'donate-url'} = url("projects/{$proposal->payment_id}/donate");
             $prop->percentage = $proposal->percentage_funded;
             $prop->amount = $proposal->target_amount;
@@ -130,9 +131,12 @@ class UpdateSiteProposals extends Command
             $prop->name = $proposal->title;
             $prop->{'gitlab-url'} = $proposal->gitlab_url;
             $prop->{'local-url'} = '#';
-            $prop->milestones = 0;
-            $prop->{'milestones-completed'} = 0;
-            $prop->{'milestones-percentage'} = 0;
+
+            $prop->milestones = $proposal->milestones;
+            $prop->{'milestones-completed'} = $proposal->milestones_completed;
+            $milestones_percentage = min(100, (int)(($proposal->milestones_completed * 100) / $proposal->milestones));
+            $prop->{'milestones-percentage'} = $milestones_percentage;
+
             $prop->percentage = $proposal->percentage_funded;
             $prop->amount = $proposal->target_amount;
             $prop->{'amount-funded'} = $proposal->amount_received;

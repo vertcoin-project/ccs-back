@@ -25,6 +25,8 @@ class CreateProjectsTable extends Migration
             $table->float('raised_amount')->default(0);
             $table->string('state');
             $table->string('filename')->unique();
+            $table->unsignedInteger('milestones');
+            $table->unsignedInteger('milestones_completed')->default(0);
             $table->string('gitlab_url')->nullable();
             $table->timestamps();
         });

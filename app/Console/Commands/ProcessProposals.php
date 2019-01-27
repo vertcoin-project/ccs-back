@@ -85,6 +85,7 @@ class ProcessProposals extends Command
                 $author = htmlspecialchars($detail['values']['author'], ENT_QUOTES);
                 $date = strtotime($detail['values']['date']);
                 $state = $this::layoutToState[$detail['values']['layout']];
+                $milestones = $detail['values']['milestones'];
                 $title = htmlspecialchars($detail['values']['title'], ENT_QUOTES);
 
                 $project = Project::where('filename', $filename)->first();
@@ -112,6 +113,8 @@ class ProcessProposals extends Command
                 $project->state = $state;
                 $project->target_amount = $amount;
                 $project->title = $title;
+                $project->milestones = sizeof($milestones);
+                $project->milestones_completed = array_reduce($milestones, function($k, $milestone) { return $milestone['done'] ? $k + 1 : $k; }, 0);
                 $project->save();
             } catch (\Exception $e) {
                 $this->error("Error processing project $filename: {$e->getMessage()}");
