@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Project;
+use GitLab\Connection;
+use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Yaml;
@@ -33,33 +35,88 @@ class ProcessProposals extends Command
         parent::__construct();
     }
 
+    private function getMergedMrFilenameToUrlMap()
+    {
+        $result = [];
+
+        $connection = new Connection(new Client());
+        $merged = $connection->mergeRequests('merged');
+        foreach ($merged as $request) {
+            $newFiles = $connection->getNewFiles($request->iid);
+            if (sizeof($newFiles) != 1) {
+                continue;
+            }
+            $filename = $newFiles[0];
+            if (!preg_match('/.+\.md$/', $filename)) {
+                continue;
+            }
+            if (basename($filename) != $filename) {
+                continue;
+            }            
+            $result[$filename] = $request->web_url;
+        }
+
+        return $result;
+    }
+
+    private const layoutToState = [ 'ffs-fr'    => 'FUNDING-REQUIRED',
+                                    'ffs-wip'   => 'WORK-IN-PROGRESS',
+                                    'ffs-cp'    => 'COMPLETED'];
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $details = [];
+        $mergedMrFilenameToUrlMap = null;
+
         $files = Storage::files('ffs-proposals');
         foreach ($files as $file) {
-            if (strpos($file,'.md')) {
-                $detail['name'] = $file;
+            if (!strpos($file,'.md')) {
+                continue;
+            }
+
+            $filename = basename($file);
+
+            try {
+                $detail['name'] = $filename;
                 $detail['values'] = $this->getAmountFromText($file);
-                $details[] = $detail['values']['title'];
-                $project = Project::where('title', $detail['values']['title'])->first();
-                if ($project) {
-                    $project->filename = $file;
-                    if ($project->state === 'IDEA') {
-                        $project->state = 'FUNDING-REQUIRED';
+
+                $amount = floatval(str_replace(",", ".", $detail['values']['amount']));
+                $author = htmlspecialchars($detail['values']['author'], ENT_QUOTES);
+                $date = strtotime($detail['values']['date']);
+                $state = $this::layoutToState[$detail['values']['layout']];
+                $title = htmlspecialchars($detail['values']['title'], ENT_QUOTES);
+
+                $project = Project::where('filename', $filename)->first();
+                if (!$project) {
+                    if ($mergedMrFilenameToUrlMap === null) {
+                        $mergedMrFilenameToUrlMap = $this->getMergedMrFilenameToUrlMap();
                     }
-                    $project->target_amount = $detail['values']['amount'];
-                    $project->save();
+                    if (!isset($mergedMrFilenameToUrlMap[$filename])) {
+                        $this->error("Project $filename: failed to find matching merged MR");
+                        $gitlab_url = null; 
+                    } else {
+                        $gitlab_url = htmlspecialchars($mergedMrFilenameToUrlMap[$filename], ENT_QUOTES);
+                    }
+
+                    $this->info("New project $filename Gitlab MR '$gitlab_url'");
+                    $project = new Project();
+                    $project->gitlab_url = $gitlab_url;
+                    $project->created_at = $date;
+                    $project->filename = $filename;
+                } else {
+                    $this->info("Updating project $filename");
                 }
+
+                $project->author = $author;
+                $project->state = $state;
+                $project->target_amount = $amount;
+                $project->title = $title;
+                $project->save();
+            } catch (\Exception $e) {
+                $this->error("Error processing project $filename: {$e->getMessage()}");
             }
         }
-        foreach ($details as $det) {
-            $this->line($det);
-        }
-
     }
 
     /**

@@ -21,11 +21,11 @@ class CreateProjectsTable extends Migration
             $table->string('address')->nullable();
             $table->string('address_uri')->nullable();
             $table->string('qr_code')->nullable();
-            $table->string('target_amount')->nullable();
-            $table->string('raised_amount')->nullable();
-            $table->string('state')->default('OPENED');
-            $table->string('filename')->nullable();
-            $table->string('gitlab_url');
+            $table->float('target_amount');
+            $table->float('raised_amount')->default(0);
+            $table->string('state');
+            $table->string('filename')->unique();
+            $table->string('gitlab_url')->nullable();
             $table->timestamps();
         });
     }
