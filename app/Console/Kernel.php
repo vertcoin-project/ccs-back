@@ -28,13 +28,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(GenerateAddresses::class)
-            ->everyMinute();
         $schedule->command(ProcessProposals::class)
             ->everyMinute();
-        $schedule->command(UpdateSiteProposals::class)
+        $schedule->command(GenerateAddresses::class)
             ->everyMinute();
         $schedule->command(walletNotify::class)
+            ->everyMinute();
+        $schedule->command(UpdateSiteProposals::class)
             ->everyMinute();
     }
 
