@@ -108,7 +108,7 @@ class UpdateSiteProposals extends Command
         $prop->name = $proposal->title;
         $prop->{'donate-url'} = url("projects/{$proposal->payment_id}/donate");
         $prop->{'gitlab-url'} = $proposal->gitlab_url;
-        $prop->{'local-url'} = '#';
+        $prop->{'local-url'} = '/forum-funding-system/proposals/'. pathinfo($proposal->filename, PATHINFO_FILENAME) . '.html';
         $prop->milestones = $proposal->milestones;
         $prop->{'milestones-completed'} = $proposal->milestones_completed;
         $milestones_percentage = min(100, (int)(($proposal->milestones_completed * 100) / $proposal->milestones));
