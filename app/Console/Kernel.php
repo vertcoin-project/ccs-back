@@ -2,7 +2,6 @@
 
 namespace App\Console;
 
-use App\Console\Commands\fetchMergeRequests;
 use App\Console\Commands\GenerateAddresses;
 use App\Console\Commands\ProcessProposals;
 use App\Console\Commands\UpdateSiteProposals;
@@ -29,8 +28,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         $schedule->command(fetchMergeRequests::class)
-            ->everyMinute();
         $schedule->command(GenerateAddresses::class)
             ->everyMinute();
         $schedule->command(ProcessProposals::class)

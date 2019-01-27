@@ -23,4 +23,20 @@ class Connection
         return collect(json_decode($response->getBody()));
     }
 
+    public function getNewFiles($merge_request_iid) {
+        $url = env('GITLAB_URL') . '/merge_requests/' . $merge_request_iid . '/changes';
+        $response = $this->client->request('GET', $url, ['headers' => ['Private-Token' => env('GITLAB_ACCESS_TOKEN')]]);
+        $deserialized = collect(json_decode($response->getBody()));
+
+        $result = [];
+        foreach ($deserialized['changes'] as $change) {
+            if ($change->new_file) {
+                $result[] = $change->new_path;
+            }
+        }
+
+        return $result;
+    }
+
+
 }
