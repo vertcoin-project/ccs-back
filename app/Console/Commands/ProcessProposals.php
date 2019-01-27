@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Project;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
+use Yaml;
 
 class ProcessProposals extends Command
 {
@@ -70,35 +71,10 @@ class ProcessProposals extends Command
      */
     public function getAmountFromText($filename = 'additional-gui-dev.md')
     {
-        $input = Storage::get($filename);
-        $lines = preg_split('/\r\n|\r|\n/', $input);
-        $values = [];
-        $flag = false;
-        $isPayoutLine = false;
-
-        foreach($lines as $line) {
-            if ($line === '---') {
-                if ($flag === true) {
-                    break;
-                }
-                $flag = true;
-                continue;
-            }
-            $details = explode(':', $line);
-            if (count($details) < 2) {
-                continue;
-            }
-            if ($details[0] === 'payouts') {
-                $isPayoutLine = true;
-                continue;
-            }
-            if ($isPayoutLine) {
-                $name = trim(str_replace('-','', $details[0]));
-                $values['payouts'][][$name] = ltrim($details[1]);
-                continue;
-            }
-            $values[$details[0]] = ltrim($details[1]);
+        $contents = preg_split('/\r?\n?---\r?\n/m', Storage::get($filename));
+        if (sizeof($contents) < 3) {
+            throw new \Exception("Failed to parse proposal, can't find YAML description surrounded by '---' lines");                        
         }
-        return $values;
+        return Yaml::parse($contents[1]);
     }
 }
