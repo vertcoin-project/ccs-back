@@ -28,6 +28,10 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Deposit extends Model
 {
+    protected $fillable = [
+        'tx_id',
+    ];
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
