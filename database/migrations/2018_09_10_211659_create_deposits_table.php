@@ -16,6 +16,7 @@ class CreateDepositsTable extends Migration
         Schema::create('deposits', function (Blueprint $table) {
             $table->increments('id');
             $table->string('payment_id');
+            $table->unsignedInteger('confirmations')->default(0);
             $table->string('amount');
             $table->dateTime('time_received');
             $table->string('tx_id');
