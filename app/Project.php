@@ -47,7 +47,7 @@ class Project extends Model
     }
 
     public function getAmountReceivedAttribute() {
-        return $this->deposits->sum('amount');
+        return $this->deposits->sum('amount') * 1e-12;
     }
 
     public function getPercentageFundedAttribute() {
