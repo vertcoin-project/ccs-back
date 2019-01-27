@@ -140,15 +140,14 @@ class walletNotify extends Command
      */
     public function createDeposit(Transaction $transaction)
     {
-        return Deposit::create([
-            'tx_id' => $transaction->id,
-            'amount' => $transaction->amount,
-            'confirmations' => $transaction->confirmations,
-            'payment_id' => $transaction->paymentId,
-            'time_received' => $transaction->time_received,
-            'block_received' => $transaction->blockHeight,
-        ]);
-
+        $deposit = new Deposit;
+        $deposit->tx_id = $transaction->id;
+        $deposit->amount = $transaction->amount;
+        $deposit->confirmations = $transaction->confirmations;
+        $deposit->payment_id = $transaction->paymentId;
+        $deposit->time_received = $transaction->time_received;
+        $deposit->block_received = $transaction->block_height;
+        $deposit->save();
     }
 
 }
