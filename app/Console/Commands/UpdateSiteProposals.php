@@ -47,6 +47,12 @@ class UpdateSiteProposals extends Command
         ];
         $json = json_encode($response, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
         \Storage::put('ffs.json', $json);
+
+        $response = [
+            $this->getProposals('Completed Proposals', 'COMPLETED'),
+        ];
+        $json = json_encode($response, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        \Storage::put('complete.json', $json);
     }
 
     private function ideaProposals()
