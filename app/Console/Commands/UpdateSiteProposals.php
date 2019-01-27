@@ -101,7 +101,7 @@ class UpdateSiteProposals extends Command
         $group = new stdClass();
         $group->stage = 'Funding Required';
         $responseProposals = [];
-        $proposals = Project::where('gitlab_state', 'merged')->where('state', 'FUNDING-REQUIRED')->get();
+        $proposals = Project::where('state', 'FUNDING-REQUIRED')->get();
         foreach ($proposals as $proposal) {
             $prop = new stdClass();
             $prop->name = $proposal->title;
@@ -111,8 +111,8 @@ class UpdateSiteProposals extends Command
             $prop->percentage = $proposal->percentage_funded;
             $prop->amount = $proposal->target_amount;
             $prop->{'amount-funded'} = $proposal->amount_received;
-            $prop->author = $proposal->gitlab_username;
-            $prop->date = $proposal->gitlab_created_at->format('F j, Y');
+            $prop->author = $proposal->author;
+            $prop->date = $proposal->created_at->format('F j, Y');
             $responseProposals[] = $prop;
         }
         $group->proposals = $responseProposals;
@@ -124,7 +124,7 @@ class UpdateSiteProposals extends Command
         $group = new stdClass();
         $group->stage = 'Work in Progress';
         $responseProposals = [];
-        $proposals = Project::where('gitlab_state', 'merged')->where('state', 'WORK-IN-PROGRESS')->get();
+        $proposals = Project::where('state', 'WORK-IN-PROGRESS')->get();
         foreach ($proposals as $proposal) {
             $prop = new stdClass();
             $prop->name = $proposal->title;
@@ -136,8 +136,8 @@ class UpdateSiteProposals extends Command
             $prop->percentage = $proposal->percentage_funded;
             $prop->amount = $proposal->target_amount;
             $prop->{'amount-funded'} = $proposal->amount_received;
-            $prop->author = $proposal->gitlab_username;
-            $prop->date = $proposal->gitlab_created_at->format('F j, Y');
+            $prop->author = $proposal->author;
+            $prop->date = $proposal->created_at->format('F j, Y');
             $responseProposals[] = $prop;
         }
         $group->proposals = $responseProposals;

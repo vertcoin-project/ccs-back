@@ -104,7 +104,7 @@
                     <div class="col-xs-12">
                         <h2>{{$project->title}}</h2>
                         <div class="row middle-xs between-xs">
-                            <p class="author-list"><span><img src="/img/author-filled.png"></span>{{$project->gitlab_username}}</p>
+                            <p class="author-list"><span><img src="/img/author-filled.png"></span>{{$project->author}}</p>
                             <p class="date-list"><span><img src="/img/calendar.png"></span>{{$project->github_created_at}}</p>
                             <p class="bar-fund-status">Raised <span class="progress-number-funded">{{$project->raised_amount}}</span> of <span class="progress-number-goal">{{$project->target_amount}}</span> XMR</p>
                         </div>
