@@ -42,14 +42,14 @@ class UpdateSiteProposals extends Command
     {
         $response = [
             $this->ideaProposals(),
-            $this->fundingRequiredProposals(),
-            $this->workInProgressProposals(),
+            $this->getProposals('Funding Required', 'FUNDING-REQUIRED'),
+            $this->getProposals('Work in Progress', 'WORK-IN-PROGRESS'),
         ];
         $json = json_encode($response, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
         \Storage::put('ffs.json', $json);
     }
 
-    public function ideaProposals()
+    private function ideaProposals()
     {
         $group = new stdClass();
         $group->stage = 'Ideas';
@@ -96,56 +96,35 @@ class UpdateSiteProposals extends Command
         return $group;
     }
 
-    public function fundingRequiredProposals()
+    private function formatProposal($proposal)
     {
-        $group = new stdClass();
-        $group->stage = 'Funding Required';
-        $responseProposals = [];
-        $proposals = Project::where('state', 'FUNDING-REQUIRED')->get();
-        foreach ($proposals as $proposal) {
-            $prop = new stdClass();
-            $prop->name = $proposal->title;
-            $prop->{'gitlab-url'} = $proposal->gitlab_url;
-            $prop->{'local-url'} = '#';
-            $prop->milestones = $proposal->milestones;
-            $prop->{'donate-url'} = url("projects/{$proposal->payment_id}/donate");
-            $prop->percentage = $proposal->percentage_funded;
-            $prop->amount = $proposal->target_amount;
-            $prop->{'amount-funded'} = $proposal->amount_received;
-            $prop->author = $proposal->author;
-            $prop->date = $proposal->created_at->format('F j, Y');
-            $responseProposals[] = $prop;
-        }
-        $group->proposals = $responseProposals;
-        return $group;
+        $prop = new stdClass();
+        $prop->name = $proposal->title;
+        $prop->{'donate-url'} = url("projects/{$proposal->payment_id}/donate");
+        $prop->{'gitlab-url'} = $proposal->gitlab_url;
+        $prop->{'local-url'} = '#';
+        $prop->milestones = $proposal->milestones;
+        $prop->{'milestones-completed'} = $proposal->milestones_completed;
+        $milestones_percentage = min(100, (int)(($proposal->milestones_completed * 100) / $proposal->milestones));
+        $prop->{'milestones-percentage'} = $milestones_percentage;
+        $prop->percentage = $proposal->percentage_funded;
+        $prop->amount = $proposal->target_amount;
+        $prop->{'amount-funded'} = $proposal->amount_received;
+        $prop->author = $proposal->author;
+        $prop->date = $proposal->created_at->format('F j, Y');
+        return $prop;
     }
 
-    public function workInProgressProposals()
+    private function getProposals($stage, $state)
     {
         $group = new stdClass();
-        $group->stage = 'Work in Progress';
+        $group->stage = $stage;
         $responseProposals = [];
-        $proposals = Project::where('state', 'WORK-IN-PROGRESS')->get();
+        $proposals = Project::where('state', $state)->get();
         foreach ($proposals as $proposal) {
-            $prop = new stdClass();
-            $prop->name = $proposal->title;
-            $prop->{'gitlab-url'} = $proposal->gitlab_url;
-            $prop->{'local-url'} = '#';
-
-            $prop->milestones = $proposal->milestones;
-            $prop->{'milestones-completed'} = $proposal->milestones_completed;
-            $milestones_percentage = min(100, (int)(($proposal->milestones_completed * 100) / $proposal->milestones));
-            $prop->{'milestones-percentage'} = $milestones_percentage;
-
-            $prop->percentage = $proposal->percentage_funded;
-            $prop->amount = $proposal->target_amount;
-            $prop->{'amount-funded'} = $proposal->amount_received;
-            $prop->author = $proposal->author;
-            $prop->date = $proposal->created_at->format('F j, Y');
-            $responseProposals[] = $prop;
+            $responseProposals[] = $this->formatProposal($proposal);
         }
         $group->proposals = $responseProposals;
         return $group;
-
     }
 }
