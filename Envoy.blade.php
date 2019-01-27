@@ -1,3 +1,3 @@
 @task('pull')
-git -C "storage/app/ffs-proposals" pull origin master
+git -C "storage/app/proposals" pull origin master
 @endtask

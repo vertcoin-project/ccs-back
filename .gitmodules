@@ -1,3 +1,4 @@
-[submodule "storage/app/ffs-proposals"]
-	path = storage/app/ffs-proposals
-	url = https://repo.getmonero.org/monero-project/ffs-proposals.git
+[submodule "storage/app/proposals"]
+	path = storage/app/proposals
+	url = https://repo.getmonero.org/monero-project/ccs-proposals.git
+	branch = master

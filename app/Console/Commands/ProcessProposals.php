@@ -69,7 +69,7 @@ class ProcessProposals extends Command
     {
         $mergedMrFilenameToUrlMap = null;
 
-        $files = Storage::files('ffs-proposals');
+        $files = Storage::files('proposals');
         foreach ($files as $file) {
             if (!strpos($file,'.md')) {
                 continue;
