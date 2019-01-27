@@ -107,9 +107,9 @@ class jsonRPCClient implements Contracts\WalletManager
      *
      * @return array
      */
-    public function incomingTransfers() : array
+    public function incomingTransfers($min_height = 0) : array
     {
-        $response = $this->request('get_transfers', ['pool' => true, 'in' => true]);
+        $response = $this->request('get_transfers', ['pool' => true, 'in' => true, 'min_height' => $min_height, 'filter_by_height' => $min_height > 0 ? true : false]);
 
         return $response;
     }
