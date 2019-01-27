@@ -106,7 +106,6 @@ class walletNotify extends Command
         $count = 0;
         //update all xmr deposit confirmations
         Deposit::where('confirmations', '<', 10)
-            ->where('processed', 0)
             ->each(function ($deposit) use ($blockheight, &$count) {
                 $this->updateConfirmation($blockheight, $deposit);
                 $count++;
