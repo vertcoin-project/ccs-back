@@ -51,7 +51,7 @@ class walletNotify extends Command
         }
 
         $min_height = Deposit::max('block_received');
-        $transactions = $wallet->scanIncomingTransfers(max($min_height, 10) - 10);
+        $transactions = $wallet->scanIncomingTransfers(max($min_height, 50) - 50);
         $transactions->each(function ($transaction) use ($wallet) {
             $this->processPayment($transaction);
         });
@@ -66,10 +66,15 @@ class walletNotify extends Command
      */
     public function processPayment(Transaction $transaction)
     {
-        // if the deposit exist, no need to try add it again
-        if (Deposit::where('tx_id', $transaction->id)->exists()) {
+        $deposit = Deposit::where('tx_id', $transaction->id)->first();
+        if ($deposit) {
+            if ($deposit->block_received == 0) {
+                $deposit->block_received = $transaction->block_height;
+                $deposit->save();
+            }
             return null;
         }
+
         $this->info('amount: '.$transaction->amount / 1000000000000 .' confirmations:'.$transaction->confirmations.' tx_hash:'.$transaction->id);
         $this->info('subaddr_index: '.$transaction->subaddr_index);
 
@@ -96,7 +101,8 @@ class walletNotify extends Command
     {
         $count = 0;
         //update all xmr deposit confirmations
-        Deposit::where('confirmations', '<', 10)
+        Deposit::where('confirmations', '<', 50)
+            ->where('block_received', '>', 0)
             ->each(function ($deposit) use ($blockheight, &$count) {
                 $this->updateConfirmation($blockheight, $deposit);
                 $count++;
