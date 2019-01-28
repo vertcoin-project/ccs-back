@@ -62,6 +62,14 @@ class ProcessProposals extends Command
     private const layoutToState = [ 'fr'    => 'FUNDING-REQUIRED',
                                     'wip'   => 'WORK-IN-PROGRESS',
                                     'cp'    => 'COMPLETED'];
+
+    private const mandatoryFields = [   'amount',
+                                        'author',
+                                        'date',
+                                        'layout',
+                                        'milestones',
+                                        'title'];
+
     /**
      * Execute the console command.
      */
@@ -80,6 +88,12 @@ class ProcessProposals extends Command
             try {
                 $detail['name'] = $filename;
                 $detail['values'] = $this->getAmountFromText($file);
+
+                foreach ($this::mandatoryFields as $field) {
+                    if (empty($detail['values'][$field])) {
+                        throw new \Exception("Mandatory field $field is missing");
+                    }
+                }
 
                 $amount = floatval(str_replace(",", ".", $detail['values']['amount']));
                 $author = htmlspecialchars($detail['values']['author'], ENT_QUOTES);
@@ -133,7 +147,7 @@ class ProcessProposals extends Command
     {
         $contents = preg_split('/\r?\n?---\r?\n/m', Storage::get($filename));
         if (sizeof($contents) < 3) {
-            throw new \Exception("Failed to parse proposal, can't find YAML description surrounded by '---' lines");                        
+            throw new \Exception("Failed to parse proposal, can't find YAML description surrounded by '---' lines");
         }
         return Yaml::parse($contents[1]);
     }
