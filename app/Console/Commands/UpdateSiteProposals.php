@@ -16,7 +16,7 @@ class UpdateSiteProposals extends Command
      *
      * @var string
      */
-    protected $signature = 'ffs:update';
+    protected $signature = 'proposal:update';
 
     /**
      * The console command description.
@@ -46,7 +46,7 @@ class UpdateSiteProposals extends Command
             $this->getProposals('Work in Progress', 'WORK-IN-PROGRESS'),
         ];
         $json = json_encode($response, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
-        \Storage::put('ffs.json', $json);
+        \Storage::put('proposals.json', $json);
 
         $response = [
             $this->getProposals('Completed Proposals', 'COMPLETED'),
@@ -108,7 +108,7 @@ class UpdateSiteProposals extends Command
         $prop->name = $proposal->title;
         $prop->{'donate-url'} = url("projects/{$proposal->subaddr_index}/donate");
         $prop->{'gitlab-url'} = $proposal->gitlab_url;
-        $prop->{'local-url'} = '/forum-funding-system/proposals/'. pathinfo($proposal->filename, PATHINFO_FILENAME) . '.html';
+        $prop->{'local-url'} = '/proposals/'. pathinfo($proposal->filename, PATHINFO_FILENAME) . '.html';
         $prop->milestones = $proposal->milestones;
         $prop->{'milestones-completed'} = $proposal->milestones_completed;
         $milestones_percentage = min(100, (int)(($proposal->milestones_completed * 100) / $proposal->milestones));

@@ -59,9 +59,9 @@ class ProcessProposals extends Command
         return $result;
     }
 
-    private const layoutToState = [ 'ffs-fr'    => 'FUNDING-REQUIRED',
-                                    'ffs-wip'   => 'WORK-IN-PROGRESS',
-                                    'ffs-cp'    => 'COMPLETED'];
+    private const layoutToState = [ 'fr'    => 'FUNDING-REQUIRED',
+                                    'wip'   => 'WORK-IN-PROGRESS',
+                                    'cp'    => 'COMPLETED'];
     /**
      * Execute the console command.
      */
@@ -123,7 +123,7 @@ class ProcessProposals extends Command
     }
 
     /**
-     * Gets the ffs variables out the top of the file
+     * Gets the proposal variables out the top of the file
      *
      * @param string $filename
      * @return array

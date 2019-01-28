@@ -3,8 +3,7 @@
 use Faker\Generator as Faker;
 
 $factory->define(\App\Project::class, function (Faker $faker) {
-    $state = $faker->randomElement(['OPENED', 'IDEA', 'FUNDING-REQUIRED', 'WORK-IN-PROGRESS', 'COMPLETED']);
-    $status = $faker->randomElement(['opened', 'closed', 'locked', 'merged']);
+    $state = $faker->randomElement(['FUNDING-REQUIRED', 'WORK-IN-PROGRESS', 'COMPLETED']);
     return [
         'title' => $faker->sentence(),
         'subaddr_index' => $faker->randomNumber(),

@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>FFS</title>
+    <title>CCS - Donate {{$project->title}}</title>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/meta/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/meta/favicon-32x32.png">
@@ -34,19 +34,19 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="text-center nav-item mob">
-                            <a href="/forum-funding-system/ideas/" class="top-link">Ideas</a>
+                            <a href="/ideas/" class="top-link">Ideas</a>
                         </div>
                         <div class="text-center nav-item mob">
-                            <a href="/forum-funding-system/funding-required/">Funding Required</a>
+                            <a href="/funding-required/">Funding Required</a>
                         </div>
                         <div class="text-center nav-item mob">
-                            <a href="/forum-funding-system/work-in-progress/">Work in Progress</a>
+                            <a href="/work-in-progress/">Work in Progress</a>
                         </div>
                         <div class="text-center nav-item mob">
-                            <a href="/forum-funding-system/completed-proposals/">Completed Tasks</a>
+                            <a href="/completed-proposals/">Completed Tasks</a>
                         </div>
                         <div class="text-center nav-item mob">
-                            <a href="/forum-funding-system/completed-proposals/">Back to Getmonero.org</a>
+                            <a href="/completed-proposals/">Back to Getmonero.org</a>
                         </div>
                     </div>
                 </div>
@@ -59,16 +59,16 @@
         <nav class="container">
             <div class="row middle-xs">
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                    <a href="/forum-funding-system/"><img src="/img/monero-logo.png" alt="Monero Logo" class="monero-logo"></a>
+                    <p class="site-name"><a href="/">Community Crowdfunding System</a></p>
                 </div>
                 <div class="col-lg-8 col-md-8 col-sm-8 items end-xs">
                     <div class="row end-xs middle-xs">
                         <div class="col-md-12">
-                            <a href="/forum-funding-system/ideas/" class="top-link">Ideas</a>
-                            <a href="/forum-funding-system/funding-required/">Funding Required</a>
-                            <a href="/forum-funding-system/work-in-progress/">Work in Progress</a>
-                            <a href="/forum-funding-system/completed-proposals/">Completed Tasks</a>
-                            <a href="/forum-funding-system/completed-proposals/">Getmonero.org</a>
+                            <a href="/ideas/" class="top-link">Ideas</a>
+                            <a href="/funding-required/">Funding Required</a>
+                            <a href="/work-in-progress/">Work in Progress</a>
+                            <a href="/completed-proposals/">Completed Tasks</a>
+                            <a href="https://getmonero.org">Getmonero.org</a>
                         </div>
                     </div>
                 </div>
@@ -77,8 +77,8 @@
     </div>
     <div class="mob bot-nav white-nav">
         <div class="row middle-xs">
-            <div class="col-xs-6">
-                <a href="/"><img src="/img/monero-logo.png" alt="Monero Logo" class="monero-logo"></a>
+            <div class="col-xs-12">
+                <p class="site-name"><a href="/">Community Crowdfunding System</a></p>
             </div>
         </div>
     </div>
@@ -88,9 +88,9 @@
         <div class="container ffs-breadcrumbs">
             <div class="row">
                 <div class="col-xs-12">
-                    <p><a href="/forum-funding-system/">Forum Funding System</a></p>
-                    <p><a href="/forum-funding-system/funding-required/">Funding Required</a></p>
-                    <p><a href="/forum-funding-system/proposals/{{pathinfo($project->filename, PATHINFO_FILENAME)}}.html">{{$project->title}}</a></p>
+                    <p><a href="/">Forum Funding System</a></p>
+                    <p><a href="/funding-required/">Funding Required</a></p>
+                    <p><a href="/proposals/{{pathinfo($project->filename, PATHINFO_FILENAME)}}.html">{{$project->title}}</a></p>
                     <p class="bread-active">Contribute</p>
                 </div>
             </div>
