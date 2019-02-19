@@ -5,17 +5,22 @@ Monero CCS is a simple web system for capturing donations made to fund community
 
 # CCS Deployment Quickstart
 
-Requirements
+## Requirements
 ```
 mysql >= 5.7.7
 php >= 7.1
 ```
 
-Deployment
+## Deployment
+
 ```
 apt update
-apt install -y composer jekyll mysql-server nginx php php-curl php-fpm php-gd php-mbstring php-mysql php-xml unzip
+apt install -y jekyll mysql-server nginx php php-curl php-fpm php-gd php-mbstring php-mysql php-xml unzip
+```
 
+Install `Composer` following the instructions at https://getcomposer.org/download/
+
+```
 cd /var/www/html
 
 git clone --recursive https://repo.getmonero.org/monero-project/ccs-back.git
