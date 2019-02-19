@@ -53,7 +53,6 @@ DB_PASSWORD=<DB_USER_PASSWORD>
 RPC_URL=http://127.0.0.1:28080/json_rpc
 
 GITLAB_URL=https://repo.getmonero.org/api/v4/projects/54
-GITLAB_ACCESS_TOKEN=<GITLAB_API_KEY>
 ```
 
 Initialize the system
