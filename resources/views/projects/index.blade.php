@@ -12,7 +12,7 @@
     <tr>
         <td><a href='{!! url('/projects/'.$project->subaddr_index); !!}'>{{ $project->subaddr_index }}</a></td>
         <td>{{$project->status}}</td>
-        <td>{{$project->amount_received}} XMR</td>
+        <td>{{$project->raised_amount}} XMR</td>
         <td>{{$project->target_amount}} XMR</td>
     </tr>
 @endforeach

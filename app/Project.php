@@ -15,7 +15,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Deposit[] $deposits
- * @property-read mixed $amount_received
+ * @property-read mixed $raised_amount
  * @property-read string $address_uri
  * @property-read int $percentage_funded
  * @property-read int $contributions
@@ -51,7 +51,7 @@ class Project extends Model
     }
 
     public function getPercentageFundedAttribute() {
-        return min(100, round($this->amount_received / $this->target_amount * 100));
+        return min(100, round($this->raised_amount / $this->target_amount * 100));
     }
 
     public function getContributionsAttribute() {
