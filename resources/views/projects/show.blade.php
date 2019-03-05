@@ -1,4 +1,4 @@
-XMR {{$project->amount_received}} /  XMR {{$project->target_amount}} Target
+XMR {{$project->raised_amount}} /  XMR {{$project->target_amount}} Target
 
 {{$project->contributions}} contributions made.  {{$project->percentage_funded}}%
 <br>

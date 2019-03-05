@@ -78,7 +78,7 @@ class UpdateSiteProposals extends Command
             if (basename($filename) != $filename) {
                 $this->error("Skipping MR #$mergeRequest->id '$mergeRequest->title': $filename must be in the root folder");
                 continue;
-            }            
+            }
             if (in_array($filename, $ideas)) {
                 $this->error("Skipping MR #$mergeRequest->id '$mergeRequest->title': duplicated $filename, another MR #$ideas[$filename]->id");
                 continue;
@@ -116,7 +116,7 @@ class UpdateSiteProposals extends Command
         $prop->{'milestones-percentage'} = $milestones_percentage;
         $prop->percentage = $proposal->percentage_funded;
         $prop->amount = $proposal->target_amount;
-        $prop->{'amount-funded'} = $proposal->amount_received;
+        $prop->{'amount-funded'} = $proposal->raised_amount;
         $prop->author = $proposal->author;
         $prop->date = $proposal->created_at->format('F j, Y');
         return $prop;

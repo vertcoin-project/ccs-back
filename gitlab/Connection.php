@@ -18,14 +18,14 @@ class Connection
 
         $url = env('GITLAB_URL') . '/merge_requests?scope=all&per_page=50&state='. $state;
 
-        $response = $this->client->request('GET', $url, ['headers' => ['Private-Token' => env('GITLAB_ACCESS_TOKEN')]]);
+        $response = $this->client->request('GET', $url);
 
         return collect(json_decode($response->getBody()));
     }
 
     public function getNewFiles($merge_request_iid) {
         $url = env('GITLAB_URL') . '/merge_requests/' . $merge_request_iid . '/changes';
-        $response = $this->client->request('GET', $url, ['headers' => ['Private-Token' => env('GITLAB_ACCESS_TOKEN')]]);
+        $response = $this->client->request('GET', $url);
         $deserialized = collect(json_decode($response->getBody()));
 
         $result = [];

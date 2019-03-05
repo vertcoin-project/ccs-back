@@ -17,7 +17,7 @@ class ProjectResource extends JsonResource
         return [
             'subaddr_index' => $this->subaddr_index,
             'status' => $this->status,
-            'amount_received' => $this->amount_received,
+            'raised_amount' => $this->raised_amount,
             'target_amount' => $this->target_amount,
             'percentage_funded' => $this->percentage_funded,
             'qrcode' => ['base64' => base64_encode($this->qrcode)],
