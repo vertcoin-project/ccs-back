@@ -88,7 +88,7 @@
         <div class="container ffs-breadcrumbs">
             <div class="row">
                 <div class="col-xs-12">
-                    <p><a href="/">Forum Funding System</a></p>
+                    <p><a href="/">Community Crowdfunding System</a></p>
                     <p><a href="/funding-required/">Funding Required</a></p>
                     <p><a href="/proposals/{{pathinfo($project->filename, PATHINFO_FILENAME)}}.html">{{$project->title}}</a></p>
                     <p class="bread-active">Contribute</p>
