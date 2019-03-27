@@ -55,6 +55,14 @@ class UpdateSiteProposals extends Command
         \Storage::put('complete.json', $json);
     }
 
+    private function sortProposalsByDateDesc($responseProposals)
+    {
+        usort($responseProposals, function($a, $b){
+            return strtotime($a->date) < strtotime($b->date) ? 1 : -1;
+        });
+        return $responseProposals;
+    }
+
     private function ideaProposals()
     {
         $group = new stdClass();
@@ -98,7 +106,7 @@ class UpdateSiteProposals extends Command
             $responseProposals[] = $prop;
         }
 
-        $group->proposals = $responseProposals;
+        $group->proposals = $this->sortProposalsByDateDesc($responseProposals);
         return $group;
     }
 
@@ -131,7 +139,7 @@ class UpdateSiteProposals extends Command
         foreach ($proposals as $proposal) {
             $responseProposals[] = $this->formatProposal($proposal);
         }
-        $group->proposals = $responseProposals;
+        $group->proposals = $this->sortProposalsByDateDesc($responseProposals);
         return $group;
     }
 }
