@@ -27,61 +27,75 @@
 <div class="page-wrapper">
 
     <div class="mob-nav">
-        <input class="burger-check" id="mobile-burger" type="checkbox"><label for="mobile-burger" class="burger"></label>
-
+              <input class="burger-check" id="mobile-burger" type="checkbox"><label for="mobile-burger" class="burger"></label>
+           
         <div class="slide-in-nav">
-            <div class="container slide-in">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="text-center nav-item mob">
+             <div class="container slide-in">
+                 <div class="row">
+                     <div class="col-xs-12"> 
+                         <div class="text-center nav-item mob">
                             <a href="/ideas/" class="top-link">Ideas</a>
-                        </div>
-                        <div class="text-center nav-item mob">
+                         </div>
+                         <div class="text-center nav-item mob">
                             <a href="/funding-required/">Funding Required</a>
-                        </div>
-                        <div class="text-center nav-item mob">
+                         </div>
+                         <div class="text-center nav-item mob">
                             <a href="/work-in-progress/">Work in Progress</a>
-                        </div>
-                        <div class="text-center nav-item mob">
+                         </div>
+                         <div class="text-center nav-item mob">
                             <a href="/completed-proposals/">Completed Tasks</a>
-                        </div>
-                        <div class="text-center nav-item mob">
+                         </div>
+                         <div class="text-center nav-item mob">
+                            <a href="/donate/index.html">Donate</a>
+                         </div>
+                         <div class="text-center nav-item mob">
                             <a href="/completed-proposals/">Back to Getmonero.org</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+                         </div>
+                     </div>                     
+                 </div>          
+             </div>
+          
         </div>
-    </div>
-
-    <div class="desktop-nav">
-        <nav class="container">
-            <div class="row middle-xs">
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+       </div>
+       
+        <div class="desktop-nav">
+           <nav class="container">
+              <div class="row middle-xs">
+                  <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                     <p class="site-name"><a href="/">Community Crowdfunding System</a></p>
-                </div>
-                <div class="col-lg-8 col-md-8 col-sm-8 items end-xs">
-                    <div class="row end-xs middle-xs">
-                        <div class="col-md-12">
-                            <a href="/ideas/" class="top-link">Ideas</a>
-                            <a href="/funding-required/">Funding Required</a>
-                            <a href="/work-in-progress/">Work in Progress</a>
-                            <a href="/completed-proposals/">Completed Tasks</a>
+                  </div>
+                  <div class="col-lg-8 col-md-8 col-sm-8 items end-xs">
+                      <div class="row end-xs middle-xs">
+                         <div class="col-md-12">
+                            <div class="dropdown">
+                                <label for="desktopdrop">CCS Stages<div class="arrow-down"></div></label>
+                                <input class="burger-checkdropdown" id="desktopdrop" type="checkbox">
+                                <div class="dropdown-content">
+                                      <a href="/ideas/">Ideas</a>
+                                      <a href="/funding-required/">Funding Required</a>
+                                      <a href="/work-in-progress/">Work in Progress</a>
+                                      <a href="/completed-proposals/">Completed Tasks</a>
+                                </div>
+                            </div>  
                             <a href="https://getmonero.org">Getmonero.org</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            <a href="/donate/" class="donate-btn">Donate</a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
         </nav>
-    </div>
-    <div class="mob bot-nav white-nav">
-        <div class="row middle-xs">
-            <div class="col-xs-12">
-                <p class="site-name"><a href="/">Community Crowdfunding System</a></p>
-            </div>
         </div>
-    </div>
+        <div class="mob bot-nav white-nav">
+            <div class="row middle-xs">
+                <div class="col-xs-12">
+                    <p class="site-name"><a href="
+                    
+                    /
+                    
+                    ">Community Crowdfunding System</a></p>
+                </div>
+            </div>     
+        </div>
 
     <div class="site-wrap ffs-proposal ffs-con">
 
@@ -149,21 +163,26 @@
     </div>
 
     <footer class="container-fluid">
-        <div class="container">
-            <div class="row around-xs footer-wrapper">
-
-                <div class="row center-xs">
-                    <div class="social-icons">
-                    </div>
-                    <div class="footer-links">
-                        <ul class="list-unstyled list-inline">
-
-                        </ul>
-                    </div>
+            <div class="container">
+                <div class="row center-xs footer-wrapper">
+                     <div class="col-md-8 col-sm-10 col-xs-12">
+                        <h3>Donate to the Monero Project</h3>
+                        <p>By donating to the following Monero address (General Fund), you are supporting the Monero Project. If you wish to donate to a specific proposal, please see <a href="/funding-required/index.html" class="white gf">Funding Required</a>.</p>  
+                        <p><a href="monero:44AFFq5kSiGBoZ4NMDwYtN18obc8AemS33DBLWs3H7otXft3XjrpDtQGv7SqSsaBYBb98uNbr2VBBEt7f2wfn3RVGQBEP3A" class="qr"><img src="/img/donate-monero.png" /></a></p>
+                        <p class="gf-address">44AFFq5kSiGBoZ4NMDwYtN18obc8AemS33DBLWs3H7otXft3XjrpDtQGv7SqSsaBYBb98uNbr2VBBEt7f2wfn3RVGQBEP3A</p>
+                     </div>
                 </div>
             </div>
-        </div>
-    </footer>
+            <div class="row center-xs">
+                    <div class="footer-links">
+                        <ul class="list-unstyled list-inline">
+                             <li><a href="https://repo.getmonero.org/monero-project/ccs-front" class="white footer-link">CCS Front End Repo</a></li>
+                             <li><a href="https://repo.getmonero.org/monero-project/ccs-back" class="white footer-link">CCS Backend Repo</a></li>
+                             <li><a href="https://repo.getmonero.org/monero-project/ccs-proposals" class="white footer-link">CCS Proposals Repo</a></li>
+                        </ul>
+                    </div>
+            </div>
+</footer>
 </div>
 </body>
 </html>
