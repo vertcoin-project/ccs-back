@@ -115,11 +115,10 @@
                 <div class="row">
                     <div class="col-xs-12"> 
                         <h2>{{$project->title}}</h2>
-                        <div class="row middle-xs between-xs">
                             <p class="author-list">{{$project->author}}</p>
                             <p class="date-list">{{date('F j, Y', strtotime($project->created_at))}}</p>
+                            <p class="date-list contributor">{{$project->contributions}}</p>
                             <p class="bar-fund-status">Raised <span class="progress-number-funded">{{$project->raised_amount}}</span> of <span class="progress-number-goal">{{$project->target_amount}}</span> XMR</p>
-                        </div>
                         <div class="progress-bar">
                             <span class="fund-progress" style="width: {{min(100, intval($project->raised_amount * 100 / $project->target_amount))}}%"></span>
                         </div>
