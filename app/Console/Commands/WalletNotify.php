@@ -15,7 +15,8 @@ class walletNotify extends Command
      *
      * @var string
      */
-    protected $signature = 'monero:notify';
+    protected $signature = 'monero:notify
+                            {height? : Scan wallet transactions starting from the specified height}';
 
     /**
      * The console command description.
@@ -50,7 +51,7 @@ class walletNotify extends Command
             return;
         }
 
-        $min_height = Deposit::max('block_received');
+        $min_height = $this->argument('height') ?? Deposit::max('block_received');
         $transactions = $wallet->scanIncomingTransfers(max($min_height, 50) - 50);
         $transactions->each(function ($transaction) use ($wallet) {
             $this->processPayment($transaction);
