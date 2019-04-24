@@ -66,7 +66,7 @@ class walletNotify extends Command
      */
     public function processPayment(Transaction $transaction)
     {
-        $deposit = Deposit::where('tx_id', $transaction->id)->first();
+        $deposit = Deposit::where('tx_id', $transaction->id)->where('subaddr_index', $transaction->subaddr_index)->first();
         if ($deposit) {
             if ($deposit->block_received == 0) {
                 $deposit->block_received = $transaction->block_height;
