@@ -123,12 +123,16 @@ Instead of scheduling a cron job you can run the following commands in no partic
     php /var/www/html/ccs-back/artisan monero:notify
     php /var/www/html/ccs-back/artisan proposal:update
     ```
-3. Process incoming donations  
+2. Process incoming donations  
 *Run it either on new block/tx notification or schedule it to run every minute or so*
     ```
     php /var/www/html/ccs-back/artisan monero:notify
     ```
-2. Generate static HTML files
+3. Generate static HTML files
     ```
     jekyll build --source /var/www/html/ccs-front --destination /var/www/html/ccs-front/_site
+    ```
+4. Get the full list of processed transactions in JSON format
+    ```
+    php /var/www/html/ccs-back/artisan deposit:list
     ```
