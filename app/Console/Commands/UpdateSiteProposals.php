@@ -63,6 +63,11 @@ class UpdateSiteProposals extends Command
         return $responseProposals;
     }
 
+    private function proposalFileExists($filename)
+    {
+        return \Storage::exists('proposals/'. basename($filename));
+    }
+
     private function ideaProposals()
     {
         $group = new stdClass();
@@ -92,7 +97,7 @@ class UpdateSiteProposals extends Command
                 continue;
             }
             $project = Project::where('filename', $filename)->first();
-            if ($project) {
+            if ($project && $this->proposalFileExists($filename)) {
                 $this->error("Skipping MR #$mergeRequest->id '$mergeRequest->title': already have a project $filename");
                 continue;
             }
@@ -137,7 +142,9 @@ class UpdateSiteProposals extends Command
         $responseProposals = [];
         $proposals = Project::where('state', $state)->get();
         foreach ($proposals as $proposal) {
-            $responseProposals[] = $this->formatProposal($proposal);
+            if ($this->proposalFileExists($proposal->filename)) {
+                $responseProposals[] = $this->formatProposal($proposal);
+            }
         }
         $group->proposals = $this->sortProposalsByDateDesc($responseProposals);
         return $group;
