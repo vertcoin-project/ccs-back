@@ -52,7 +52,7 @@ class ProcessProposals extends Command
             }
             if (basename($filename) != $filename) {
                 continue;
-            }            
+            }
             $result[$filename] = $request->web_url;
         }
 
@@ -109,7 +109,7 @@ class ProcessProposals extends Command
                     }
                     if (!isset($mergedMrFilenameToUrlMap[$filename])) {
                         $this->error("Project $filename: failed to find matching merged MR");
-                        $gitlab_url = null; 
+                        $gitlab_url = null;
                     } else {
                         $gitlab_url = htmlspecialchars($mergedMrFilenameToUrlMap[$filename], ENT_QUOTES);
                     }
@@ -121,6 +121,10 @@ class ProcessProposals extends Command
                     $project->filename = $filename;
                 } else {
                     $this->info("Updating project $filename");
+                }
+
+                if (isset($detail['values']['gitlab_url'])) {
+                    $project->gitlab_url = htmlspecialchars($detail['values']['gitlab_url'], ENT_QUOTES);
                 }
 
                 $project->author = $author;
