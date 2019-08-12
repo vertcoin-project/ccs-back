@@ -17,14 +17,7 @@ class FundingController extends Controller
      */
     public function index(Request $request)
     {
-        $projects = Project::paginate(15);
-        // If the request has header `Accept: */json`, return JSON
-        if ($request->wantsJson())
-        {
-            return ProjectResource::collection($projects);
-        }
-        return view('projects.index')
-            ->with('projects', $projects);
+        return ProjectResource::collection(Project::all());
     }
 
     /**
