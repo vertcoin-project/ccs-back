@@ -15,13 +15,15 @@ class ProjectResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'subaddr_index' => $this->subaddr_index,
-            'status' => $this->status,
-            'raised_amount' => $this->raised_amount,
-            'target_amount' => $this->target_amount,
-            'percentage_funded' => $this->percentage_funded,
-            'qrcode' => ['base64' => base64_encode($this->qrcode)],
+            'address' => $this->address,
+            'author' => $this->author,
             'contributions' => $this->contributions,
+            'date' => $this->created_at->format('F j, Y'),
+            'percentage_funded' => $this->percentage_funded,
+            'raised_amount' => $this->raised_amount,
+            'state' => $this->state,
+            'target_amount' => $this->target_amount,
+            'title' => $this->title,
         ];
     }
 }
