@@ -3,7 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Project;
-use GitLab\Connection;
+use App\Repository\State;
+use App\Repository\Connection;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -40,20 +41,20 @@ class ProcessProposals extends Command
         $result = [];
 
         $connection = new Connection(new Client());
-        $merged = $connection->mergeRequests('merged');
+        $merged = $connection->mergeRequests(State::Merged);
         foreach ($merged as $request) {
-            $newFiles = $connection->getNewFiles($request->iid);
-            if (sizeof($newFiles) != 1) {
+            $newFiles = $connection->getNewFiles($request);
+            if ($newFiles->count() != 1) {
                 continue;
             }
-            $filename = $newFiles[0];
+            $filename = $newFiles->first();
             if (!preg_match('/.+\.md$/', $filename)) {
                 continue;
             }
             if (basename($filename) != $filename) {
                 continue;
             }
-            $result[$filename] = $request->web_url;
+            $result[$filename] = $request->url();
         }
 
         return $result;

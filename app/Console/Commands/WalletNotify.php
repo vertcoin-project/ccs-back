@@ -2,28 +2,30 @@
 
 namespace App\Console\Commands;
 
+use App\Coin\CoinAuto;
 use App\Deposit;
 use App\Project;
 use Illuminate\Console\Command;
 use Monero\Transaction;
-use Monero\WalletOld;
 
 class walletNotify extends Command
 {
+    private $coin;
+    private $wallet;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'monero:notify
-                            {height? : Scan wallet transactions starting from the specified height}';
+    protected $signature = 'wallet:notify';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Checks the monero blockchain for transactions';
+    protected $description = 'Checks the blockchain for transactions';
 
     /**
      * Create a new command instance.
@@ -33,6 +35,9 @@ class walletNotify extends Command
     public function __construct()
     {
         parent::__construct();
+
+        $this->coin = CoinAuto::newCoin();
+        $this->wallet = $this->coin->newWallet();
     }
 
     /**
@@ -42,18 +47,15 @@ class walletNotify extends Command
      */
     public function handle()
     {
-        $wallet = new WalletOld();
-
-        $blockheight = $wallet->blockHeight();
+        $blockheight = $this->wallet->blockHeight();
         if ($blockheight < 1) {
-            $this->error('monero daemon down or wrong port in db ?');
+            $this->error('failed to fetch blockchain height');
 
             return;
         }
 
-        $min_height = $this->argument('height') ?? Deposit::max('block_received');
-        $transactions = $wallet->scanIncomingTransfers(max($min_height, 50) - 50);
-        $transactions->each(function ($transaction) use ($wallet) {
+        $transactions = $this->coin->onNotifyGetTransactions($this, $this->wallet);
+        $transactions->each(function ($transaction) {
             $this->processPayment($transaction);
         });
 
@@ -67,6 +69,9 @@ class walletNotify extends Command
      */
     public function processPayment(Transaction $transaction)
     {
+        $amountCoins = $transaction->amount / 10 ** $this->wallet->digitsAfterTheRadixPoint();
+        $details = 'address: ' . $transaction->address . ' amount: '. $amountCoins . ' txid: '.$transaction->id;
+
         $deposit = Deposit::where('tx_id', $transaction->id)->where('subaddr_index', $transaction->subaddr_index)->first();
         if ($deposit) {
             if ($deposit->block_received == 0) {
@@ -76,16 +81,15 @@ class walletNotify extends Command
             return null;
         }
 
-        $this->info('amount: '.$transaction->amount / 1000000000000 .' confirmations:'.$transaction->confirmations.' tx_hash:'.$transaction->id);
-        $this->info('subaddr_index: '.$transaction->subaddr_index);
-
         $this->createDeposit($transaction);
 
-        $project = Project::where('subaddr_index', $transaction->subaddr_index)->first();
-        if ($project) {
+        if ($project = Project::where('subaddr_index', $transaction->subaddr_index)->first()) {
             // update the project total
-            $project->raised_amount = $project->raised_amount + $transaction->amount * 1e-12;
+            $project->raised_amount = $project->raised_amount + $amountCoins;
             $project->save();
+            $this->info('Donation to "' . $project->filename . '" '. $details);
+        } else {
+            $this->error('Unrecognized donation, ' . $details);
         }
 
         return;
@@ -122,7 +126,7 @@ class walletNotify extends Command
      */
     public function updateConfirmation($blockheight, Deposit $deposit)
     {
-        $diff = $blockheight - $deposit->block_received;
+        $diff = $blockheight - $deposit->block_received + 1;
         $deposit->confirmations = $diff;
         $deposit->save();
 

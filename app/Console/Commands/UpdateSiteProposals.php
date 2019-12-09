@@ -3,8 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Project;
+use App\Repository\State;
+use App\Repository\Connection;
 use Illuminate\Console\Command;
-use GitLab\Connection;
 use GuzzleHttp\Client;
 use stdClass;
 use Symfony\Component\Yaml\Yaml;
@@ -76,38 +77,38 @@ class UpdateSiteProposals extends Command
 
         $ideas = [];
         $connection = new Connection(new Client());
-        $mergeRequests = $connection->mergeRequests('opened');
+        $mergeRequests = $connection->mergeRequests(State::Opened);
         foreach ($mergeRequests as $mergeRequest) {
-            $newFiles = $connection->getNewFiles($mergeRequest->iid);
-            if (sizeof($newFiles) != 1) {
-                $this->error ("Skipping MR #$mergeRequest->id '$mergeRequest->title': contains multiple files");
+            $newFiles = $connection->getNewFiles($mergeRequest);
+            if ($newFiles->count() != 1) {
+                $this->error ("Skipping MR #{$mergeRequest->id()} '{$mergeRequest->title()}': contains multiple files");
                 continue;
             }
-            $filename = $newFiles[0];
+            $filename = $newFiles->first();
             if (!preg_match('/.+\.md$/', $filename)) {
-                $this->error("Skipping MR #$mergeRequest->id '$mergeRequest->title': doesn't contain any .md file");
+                $this->error("Skipping MR #{$mergeRequest->id()} '{$mergeRequest->title()}': doesn't contain any .md file");
                 continue;
             }
             if (basename($filename) != $filename) {
-                $this->error("Skipping MR #$mergeRequest->id '$mergeRequest->title': $filename must be in the root folder");
+                $this->error("Skipping MR #{$mergeRequest->id()} '{$mergeRequest->title()}': $filename must be in the root folder");
                 continue;
             }
             if (in_array($filename, $ideas)) {
-                $this->error("Skipping MR #$mergeRequest->id '$mergeRequest->title': duplicated $filename, another MR #$ideas[$filename]->id");
+                $this->error("Skipping MR #{$mergeRequest->id()} '{$mergeRequest->title()}': duplicated $filename, another MR #$ideas[$filename]->id");
                 continue;
             }
             $project = Project::where('filename', $filename)->first();
             if ($project && $this->proposalFileExists($filename)) {
-                $this->error("Skipping MR #$mergeRequest->id '$mergeRequest->title': already have a project $filename");
+                $this->error("Skipping MR #{$mergeRequest->id()} '{$mergeRequest->title()}': already have a project $filename");
                 continue;
             }
-            $this->info("Idea MR #$mergeRequest->id '$mergeRequest->title': $filename");
+            $this->info("Idea MR #{$mergeRequest->id()} '{$mergeRequest->title()}': $filename");
 
             $prop = new stdClass();
-            $prop->name = htmlspecialchars(trim($mergeRequest->title), ENT_QUOTES);
-            $prop->{'gitlab-url'} = htmlspecialchars($mergeRequest->web_url, ENT_QUOTES);
-            $prop->author = htmlspecialchars($mergeRequest->author->username, ENT_QUOTES);
-            $prop->date = date('F j, Y', strtotime($mergeRequest->created_at));
+            $prop->name = htmlspecialchars(trim($mergeRequest->title()), ENT_QUOTES);
+            $prop->{'gitlab-url'} = htmlspecialchars($mergeRequest->url(), ENT_QUOTES);
+            $prop->author = htmlspecialchars($mergeRequest->author(), ENT_QUOTES);
+            $prop->date = date('F j, Y', $mergeRequest->created_at());
             $responseProposals[] = $prop;
         }
 
@@ -119,7 +120,8 @@ class UpdateSiteProposals extends Command
     {
         $prop = new stdClass();
         $prop->name = $proposal->title;
-        $prop->{'donate-url'} = url("projects/{$proposal->subaddr_index}/donate");
+        $prop->{'donate-address'} = $proposal->address;
+        $prop->{'donate-qr-code'} = $proposal->address_uri ? $proposal->getQrCodeSrcAttribute() : null;
         $prop->{'gitlab-url'} = $proposal->gitlab_url;
         $prop->{'local-url'} = '/proposals/'. pathinfo($proposal->filename, PATHINFO_FILENAME) . '.html';
         $prop->contributions = $proposal->contributions;
