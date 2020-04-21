@@ -6,8 +6,13 @@ use App\Project;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
-class WalletOld
+class WalletOld implements WalletCommon
 {
+    public static function digitsAfterTheRadixPoint() : int
+    {
+        return 12;
+    }
+
     /**
      * WalletOld constructor.
      *
@@ -15,7 +20,9 @@ class WalletOld
      */
     public function __construct($client = null)
     {
-        $this->client = $client ?: new jsonRPCClient(env('RPC_URL'));
+        $this->client = $client ?: new jsonRPCClient([  'username' => env('RPC_USER'),
+                                                        'password' => env('RPC_PASSWORD'),
+                                                        'url' => env('RPC_URL')]);
     }
 
     /**
@@ -90,7 +97,7 @@ class WalletOld
      *
      * @return int
      */
-    public function blockHeight()
+    public function blockHeight() : int
     {
         return $this->client->blockHeight();
     }

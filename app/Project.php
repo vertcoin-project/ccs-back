@@ -46,10 +46,6 @@ class Project extends Model
         return $this->hasMany(Deposit::class, 'subaddr_index', 'subaddr_index');
     }
 
-    public function getAmountReceivedAttribute() {
-        return $this->deposits->sum('amount') * 1e-12;
-    }
-
     public function getPercentageFundedAttribute() {
         return min(100, round($this->raised_amount / $this->target_amount * 100));
     }

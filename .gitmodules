@@ -1,4 +1,0 @@
-[submodule "storage/app/proposals"]
-	path = storage/app/proposals
-	url = https://repo.getmonero.org/monero-project/ccs-proposals.git
-	branch = master
