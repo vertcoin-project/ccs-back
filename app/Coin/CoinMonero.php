@@ -2,6 +2,7 @@
 
 namespace App\Coin;
 
+use App\Deposit;
 use Illuminate\Console\Command;
 
 use Monero\WalletCommon;
@@ -16,7 +17,7 @@ class CoinMonero implements Coin
 
     public function onNotifyGetTransactions(Command $command, WalletCommon $wallet)
     {
-        $min_height = $command->argument('height') ?? Deposit::max('block_received');
+        $min_height = $command->arguments()['height'] ?? Deposit::max('block_received');
         return $wallet->scanIncomingTransfers(max($min_height, 50) - 50);
     }
 
