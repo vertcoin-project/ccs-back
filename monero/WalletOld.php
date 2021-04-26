@@ -75,6 +75,9 @@ class WalletOld implements WalletCommon
                 if ($payment['subaddr_index']['major'] != $account_index) {
                     continue;
                 }
+                if ($payment['locked']) {
+                    continue;
+                }
                 $transaction = new Transaction(
                     $payment['txid'],
                     $payment['amount'],

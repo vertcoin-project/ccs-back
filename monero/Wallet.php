@@ -63,13 +63,16 @@ class Wallet
         }
 
         $transactions = [];
-        const toScan = ['pool', 'in'];        
+        const toScan = ['pool', 'in'];
         foreach (toScan as $entry) {
             if (!isset($response[$entry])) {
                 continue;
             }
             foreach ($response[$entry] as $payment) {
                 if $payment['subaddr_index']['major'] != $account_index {
+                    continue;
+                }
+                if ($payment['locked']) {
                     continue;
                 }
                 $transaction = new Transaction(
