@@ -23,6 +23,8 @@ class CoinAuto
                 return new CoinMonero();
             case 'zcoin':
                 return new CoinZcoin();
+            case 'vertcoin':
+                return new CoinVertcoin();
             default:
                 throw new \Exception('Unsupported COIN ' . $coin);
         }

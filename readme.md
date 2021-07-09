@@ -1,7 +1,7 @@
 
-# About Monero CCS
+# About Vertcoin CCS
 
-Monero CCS is a simple web system for capturing donations made to fund community projects
+Vertcoin CCS is a simple web system for capturing donations made to fund community projects
 
 # CCS Deployment Quickstart
 
@@ -53,7 +53,7 @@ DB_DATABASE=<DB_NAME>
 DB_USERNAME=<DB_USER_NAME>
 DB_PASSWORD=<DB_USER_PASSWORD>
 
-RPC_URL=http://127.0.0.1:28080/json_rpc
+RPC_URL=http://127.0.0.1:5888
 RPC_USER=
 RPC_PASSWORD=
 
