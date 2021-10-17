@@ -21,9 +21,43 @@ class WalletVertcoin implements WalletCommon
                                         'url' => env('RPC_URL')]);
     }
 
+//     public function getPaymentAddress()
+//     {
+//         return ['address' => $this->rpc->request('getnewaddress')];
+//     }
+
     public function getPaymentAddress()
     {
-        return ['address' => $this->rpc->request('getnewaddress')];
+        $line = '';
+        $f = fopen('/path/to/multisigaddresslist.txt', 'r');
+        $cursor = -1;
+        fseek($f, $cursor, SEEK_END);
+        $char = fgetc($f);
+        //Trim trailing newline characters in the file
+        while ($char === "\n" || $char === "\r") {
+           fseek($f, $cursor--, SEEK_END);
+           $char = fgetc($f);
+        }
+        //Read until the next line of the file begins or the first newline char
+        while ($char !== false && $char !== "\n" && $char !== "\r") {
+           //Prepend the new character
+           $line = $char . $line;
+           fseek($f, $cursor--, SEEK_END);
+           $char = fgetc($f);
+        }
+        echo $line;
+
+        // load the data and delete the line from the array
+        $lines = file('/path/to/multisigaddresslist.txt');
+        $last = sizeof($lines) - 1 ;
+        unset($lines[$last]);
+
+        // write the new data to the file
+        $fp = fopen('/path/to/multisigaddresslist.txt', 'w');
+        fwrite($fp, implode('', $lines));
+        fclose($fp);
+
+        return ['address' => $line];
     }
 
     private function decodeTxAmount(string $tx_amount) : int
