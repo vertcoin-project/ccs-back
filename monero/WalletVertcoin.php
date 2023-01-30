@@ -85,7 +85,7 @@ class WalletVertcoin implements WalletCommon
 
     public function scanIncomingTransfers($skip_txes = 0)
     {
-        return collect($this->rpc->request('listtransactions', ['*', 100, $skip_txes], true))->filter(function ($tx) {
+        return collect($this->rpc->request('listtransactions', ['*', 100, $skip_txes, true], true))->filter(function ($tx) {
             return $tx['category'] == 'receive';
         })->map(function ($tx) {
             return new Transaction(
